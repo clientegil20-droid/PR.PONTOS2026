@@ -456,6 +456,15 @@ const App: React.FC = () => {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center text-white">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-xl font-medium animate-pulse">Sincronizando com Supabase...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full w-full bg-slate-900 overflow-hidden relative">
       <Routes>
