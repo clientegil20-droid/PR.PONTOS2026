@@ -1,0 +1,7 @@
+{
+  "name": "Gil Ponto",
+  "description": "Sistema de ponto eletrônico para tablets com verificação facial via IA.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
