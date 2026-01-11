@@ -16,47 +16,47 @@ const WelcomeScreen: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-full w-full bg-slate-900 text-white animate-fade-in relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black opacity-80"></div>
-      
+
       <div className="relative z-10 p-8 text-center max-w-2xl flex flex-col items-center">
-         <div className="mb-8 flex justify-center">
-            <div className="p-6 bg-blue-600 rounded-full shadow-lg shadow-blue-500/30">
-               {msg ? (
-                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12 text-white">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                 </svg>
-               ) : (
-                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12 text-white">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                 </svg>
-               )}
-            </div>
-         </div>
+        <div className="mb-8 flex justify-center">
+          <div className="p-6 bg-blue-600 rounded-full shadow-lg shadow-blue-500/30">
+            {msg ? (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12 text-white">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12 text-white">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+              </svg>
+            )}
+          </div>
+        </div>
 
-         <h1 className="text-4xl font-bold mb-6 tracking-tight">{COMPANY_NAME}</h1>
-         
-         {msg ? (
-           <div className="mb-12 animate-fade-in">
-             <h2 className="text-3xl font-semibold text-emerald-400 mb-3">{msg.title}</h2>
-             <p className="text-xl text-slate-300">{msg.subtitle}</p>
-           </div>
-         ) : (
-           <div className="mb-12">
-             <p className="text-xl text-slate-400">Sistema administrativo encerrado.</p>
-           </div>
-         )}
+        <h1 className="text-4xl font-bold mb-6 tracking-tight">{COMPANY_NAME}</h1>
 
-         <button 
-           onClick={() => {
-             playSound('click');
-             navigate('/');
-           }}
-           className="px-10 py-5 bg-white text-slate-900 rounded-2xl font-bold text-lg hover:bg-slate-200 transition-all shadow-xl active:scale-95 flex items-center gap-3"
-         >
-           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-           </svg>
-           Voltar ao Início
-         </button>
+        {msg ? (
+          <div className="mb-12 animate-fade-in">
+            <h2 className="text-3xl font-semibold text-emerald-400 mb-3">{msg.title}</h2>
+            <p className="text-xl text-slate-300">{msg.subtitle}</p>
+          </div>
+        ) : (
+          <div className="mb-12">
+            <p className="text-xl text-slate-400">Sistema administrativo encerrado.</p>
+          </div>
+        )}
+
+        <button
+          onClick={() => {
+            playSound('click');
+            navigate('/');
+          }}
+          className="px-10 py-5 bg-white text-slate-900 rounded-2xl font-bold text-lg hover:bg-slate-200 transition-all shadow-xl active:scale-95 flex items-center gap-3"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+          </svg>
+          Voltar ao Início
+        </button>
       </div>
     </div>
   );
@@ -66,12 +66,49 @@ const App: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<AppState>(AppState.IDLE);
   const [enteredId, setEnteredId] = useState('');
-  const [adminPin, setAdminPin] = useState('9999'); // Default Admin PIN
-  const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
+
+  // Persistence states
+  const [adminPin, setAdminPin] = useState<string>(() => {
+    return localStorage.getItem('gil_ponto_admin_pin') || '9999';
+  });
+
+  const [employees, setEmployees] = useState<Employee[]>(() => {
+    const saved = localStorage.getItem('gil_ponto_employees');
+    return saved ? JSON.parse(saved) : MOCK_EMPLOYEES;
+  });
+
+  const [logs, setLogs] = useState<TimeLog[]>(() => {
+    const saved = localStorage.getItem('gil_ponto_logs');
+    if (!saved) return [];
+    try {
+      const parsed = JSON.parse(saved);
+      // Re-hydrate Date objects
+      return parsed.map((log: any) => ({
+        ...log,
+        timestamp: new Date(log.timestamp)
+      }));
+    } catch (e) {
+      console.error("Error parsing logs from localStorage", e);
+      return [];
+    }
+  });
+
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
-  const [logs, setLogs] = useState<TimeLog[]>([]);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Save to localStorage whenever persistence states change
+  useEffect(() => {
+    localStorage.setItem('gil_ponto_admin_pin', adminPin);
+  }, [adminPin]);
+
+  useEffect(() => {
+    localStorage.setItem('gil_ponto_employees', JSON.stringify(employees));
+  }, [employees]);
+
+  useEffect(() => {
+    localStorage.setItem('gil_ponto_logs', JSON.stringify(logs));
+  }, [logs]);
 
   // Clock updates
   useEffect(() => {
@@ -137,7 +174,7 @@ const App: React.FC = () => {
     };
 
     setLogs(prev => [...prev, newLog]);
-    
+
     // Success sound for completion
     playSound('success');
 
@@ -145,10 +182,10 @@ const App: React.FC = () => {
       title: type === 'IN' ? 'Bom trabalho!' : 'Até logo!',
       subtitle: verification.message || `Ponto de ${type === 'IN' ? 'entrada' : 'saída'} registrado com sucesso.`
     };
-    
+
     // Reset internal state before navigating to Welcome screen
     resetFlow();
-    
+
     navigate('/welcome', { state: message });
   };
 
@@ -182,7 +219,7 @@ const App: React.FC = () => {
   // --- Renders ---
 
   const renderIdle = () => (
-    <div 
+    <div
       className="flex flex-col items-center justify-center h-full w-full bg-slate-900 text-white cursor-pointer relative overflow-hidden"
       onClick={() => {
         playSound('start');
@@ -190,7 +227,7 @@ const App: React.FC = () => {
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-900 opacity-80"></div>
-      
+
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center mb-32">
         <div className="mb-8 p-6 bg-white/5 rounded-full backdrop-blur-md animate-pulse border border-white/10">
@@ -198,9 +235,9 @@ const App: React.FC = () => {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h1 className="text-5xl font-bold mb-2 tracking-tight text-white font-mono">{currentTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</h1>
+        <h1 className="text-5xl font-bold mb-2 tracking-tight text-white font-mono">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</h1>
         <p className="text-xl text-slate-300 mb-12 capitalize">{currentTime.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-        
+
         <div className="text-center">
           <h2 className="text-2xl font-semibold mb-2 text-white">{COMPANY_NAME}</h2>
           <p className="text-blue-300/80 animate-bounce">Toque na tela para bater o ponto</p>
@@ -210,41 +247,41 @@ const App: React.FC = () => {
       {/* Recent Activity Feed */}
       {logs.length > 0 && (
         <div className="absolute bottom-0 left-0 right-0 z-20 pb-8 pt-12 bg-gradient-to-t from-slate-900 via-slate-900/90 to-transparent">
-            <div className="max-w-6xl mx-auto px-6">
-                <h3 className="text-slate-400 text-xs uppercase tracking-widest font-semibold mb-4 ml-1 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Últimas Atividades
-                </h3>
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
-                    {logs.slice(-5).reverse().map((log) => (
-                        <div key={log.id} className="flex-shrink-0 bg-slate-800/60 backdrop-blur-md p-3 rounded-xl border border-slate-700/50 flex items-center gap-3 shadow-lg hover:bg-slate-800/80 transition-colors w-64">
-                            <div className="relative">
-                                <img src={log.photoBase64} alt="User" className="w-12 h-12 rounded-full object-cover border-2 border-slate-600" />
-                                <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-800 ${log.type === 'IN' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
-                                    {log.type === 'IN' ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
-                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clipRule="evenodd" />
-                                        </svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
-                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.5-9a.75.75 0 00-.75-.75H7.25a.75.75 0 000 1.5h5.5a.75.75 0 00.75-.75z" clipRule="evenodd" />
-                                        </svg>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="min-w-0">
-                                <p className="text-sm font-bold text-white truncate">{log.employeeName}</p>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                    <span className={`text-[10px] font-bold px-1.5 rounded-md tracking-wide ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
-                                        {log.type === 'IN' ? 'ENTROU' : 'SAIU'}
-                                    </span>
-                                    <span className="text-xs text-slate-400 font-mono">{log.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+          <div className="max-w-6xl mx-auto px-6">
+            <h3 className="text-slate-400 text-xs uppercase tracking-widest font-semibold mb-4 ml-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Últimas Atividades
+            </h3>
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
+              {logs.slice(-5).reverse().map((log) => (
+                <div key={log.id} className="flex-shrink-0 bg-slate-800/60 backdrop-blur-md p-3 rounded-xl border border-slate-700/50 flex items-center gap-3 shadow-lg hover:bg-slate-800/80 transition-colors w-64">
+                  <div className="relative">
+                    <img src={log.photoBase64} alt="User" className="w-12 h-12 rounded-full object-cover border-2 border-slate-600" />
+                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-800 ${log.type === 'IN' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
+                      {log.type === 'IN' ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.5-9a.75.75 0 00-.75-.75H7.25a.75.75 0 000 1.5h5.5a.75.75 0 00.75-.75z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-white truncate">{log.employeeName}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className={`text-[10px] font-bold px-1.5 rounded-md tracking-wide ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
+                        {log.type === 'IN' ? 'ENTROU' : 'SAIU'}
+                      </span>
+                      <span className="text-xs text-slate-400 font-mono">{log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                  </div>
                 </div>
+              ))}
             </div>
+          </div>
         </div>
       )}
     </div>
@@ -282,36 +319,36 @@ const App: React.FC = () => {
 
         {/* Pulsing effect behind the image */}
         <div className="absolute inset-0 rounded-full bg-blue-500 opacity-20 animate-ping"></div>
-        
+
         {/* User image container */}
         <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-slate-700 shadow-2xl z-10 bg-slate-800">
           {capturedImage ? (
-             <img src={capturedImage} alt="Processing" className="w-full h-full object-cover opacity-90" />
+            <img src={capturedImage} alt="Processing" className="w-full h-full object-cover opacity-90" />
           ) : (
             <div className="w-full h-full bg-slate-800"></div>
           )}
-          
+
           {/* Grid Overlay */}
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8cGF0aCBkPSJNMCAwTDggOFpNOCAwTDAgOFoiIHN0cm9rZT0ibm9uZSIvPjwvc3ZnPg==')] opacity-20 mix-blend-overlay"></div>
 
           {/* Scanning Line Animation */}
           <div className="absolute inset-0 w-full h-full animate-scan pointer-events-none">
-             <div className="w-full h-2/3 bg-gradient-to-b from-transparent via-blue-500/40 to-transparent border-b-2 border-blue-400/80 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+            <div className="w-full h-2/3 bg-gradient-to-b from-transparent via-blue-500/40 to-transparent border-b-2 border-blue-400/80 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
           </div>
         </div>
       </div>
-      
+
       <h2 className="text-2xl font-bold text-white mb-4 animate-pulse">Verificando Biometria...</h2>
-      
+
       <div className="flex items-center gap-2 mb-4">
         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
         <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
       </div>
-      
+
       <div className="flex flex-col items-center gap-1">
-          <p className="text-slate-400 font-medium text-sm">Analisando traços faciais</p>
-          <p className="text-slate-500 text-xs">Aguarde um momento</p>
+        <p className="text-slate-400 font-medium text-sm">Analisando traços faciais</p>
+        <p className="text-slate-500 text-xs">Aguarde um momento</p>
       </div>
     </div>
   );
@@ -321,8 +358,8 @@ const App: React.FC = () => {
       <Routes>
         {/* Admin Route */}
         <Route path="/admin" element={
-          <LogList 
-            logs={logs} 
+          <LogList
+            logs={logs}
             employees={employees}
             onAddEmployee={handleAddEmployee}
             onUpdateEmployee={handleUpdateEmployee}
@@ -341,10 +378,10 @@ const App: React.FC = () => {
         <Route path="/" element={
           <>
             {state === AppState.IDLE && renderIdle()}
-            
+
             {state === AppState.ENTER_ID && (
               <div className="h-full flex flex-col justify-center">
-                <Keypad 
+                <Keypad
                   value={enteredId}
                   onKeyPress={handleKeypadPress}
                   onClear={handleKeypadClear}
@@ -355,7 +392,7 @@ const App: React.FC = () => {
             )}
 
             {state === AppState.CAMERA && currentEmployee && (
-              <CameraFeed 
+              <CameraFeed
                 employeeName={currentEmployee.name}
                 onCapture={handleCapture}
                 onCancel={resetFlow}

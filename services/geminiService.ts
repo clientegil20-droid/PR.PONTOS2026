@@ -1,7 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 // Initialize the client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// @ts-ignore - access to process.env is replaced by Vite's import.meta.env
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY || '' });
 
 export interface VerificationResult {
   faceDetected: boolean;
@@ -13,9 +14,9 @@ export const verifyCheckInImage = async (base64Image: string, employeeName: stri
     // Clean the base64 string if it has the prefix
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
 
-    // Use gemini-3-flash-preview for Multimodal (Vision) tasks with JSON schema support
+    // Use gemini-1.5-flash for Multimodal (Vision) tasks
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-1.5-flash',
       contents: {
         parts: [
           {
