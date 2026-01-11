@@ -336,8 +336,8 @@ const LogList: React.FC<LogListProps> = ({
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'dashboard'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
-                : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
+              : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -348,8 +348,8 @@ const LogList: React.FC<LogListProps> = ({
           <button
             onClick={() => setActiveTab('logs')}
             className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'logs'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
-                : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
+              : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -360,8 +360,8 @@ const LogList: React.FC<LogListProps> = ({
           <button
             onClick={() => setActiveTab('employees')}
             className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'employees'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
-                : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
+              : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -760,7 +760,17 @@ const LogList: React.FC<LogListProps> = ({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">Valor Hora Extra</label>
+                    <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Regular</label>
+                    <input
+                      type="number"
+                      value={editingEmployee.hourlyRate || 0}
+                      onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
+                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Extra</label>
                     <input
                       type="number"
                       value={editingEmployee.overtimeRate}
@@ -769,6 +779,8 @@ const LogList: React.FC<LogListProps> = ({
                       step="0.01"
                     />
                   </div>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="text-xs text-slate-500 uppercase font-bold">Meta Diária (h)</label>
                     <input
