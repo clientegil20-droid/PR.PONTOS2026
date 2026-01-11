@@ -7,6 +7,7 @@ import CameraFeed from './components/CameraFeed';
 import LogList from './components/LogList';
 import { verifyCheckInImage } from './services/geminiService';
 import { playSound } from './utils/sound';
+import { supabase } from './services/supabase';
 
 const WelcomeScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -67,48 +68,78 @@ const App: React.FC = () => {
   const [state, setState] = useState<AppState>(AppState.IDLE);
   const [enteredId, setEnteredId] = useState('');
 
-  // Persistence states
-  const [adminPin, setAdminPin] = useState<string>(() => {
-    return localStorage.getItem('gil_ponto_admin_pin') || '9999';
-  });
-
-  const [employees, setEmployees] = useState<Employee[]>(() => {
-    const saved = localStorage.getItem('gil_ponto_employees');
-    return saved ? JSON.parse(saved) : MOCK_EMPLOYEES;
-  });
-
-  const [logs, setLogs] = useState<TimeLog[]>(() => {
-    const saved = localStorage.getItem('gil_ponto_logs');
-    if (!saved) return [];
-    try {
-      const parsed = JSON.parse(saved);
-      // Re-hydrate Date objects
-      return parsed.map((log: any) => ({
-        ...log,
-        timestamp: new Date(log.timestamp)
-      }));
-    } catch (e) {
-      console.error("Error parsing logs from localStorage", e);
-      return [];
-    }
-  });
+  // State variables
+  const [adminPin, setAdminPin] = useState<string>('9999');
+  const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
+  const [logs, setLogs] = useState<TimeLog[]>([]);
 
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Save to localStorage whenever persistence states change
+  // Load data from Supabase on init
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      // Fetch PIN
+      const savedPin = localStorage.getItem('gil_ponto_admin_pin') || '9999';
+      setAdminPin(savedPin);
+
+      // Fetch Employees
+      const { data: empData, error: empError } = await supabase
+        .from('employees')
+        .select('*');
+
+      if (empError) {
+        console.error('Error fetching employees:', empError);
+        setEmployees(MOCK_EMPLOYEES);
+      } else if (empData && empData.length > 0) {
+        setEmployees(empData.map(e => ({
+          id: e.id,
+          name: e.name,
+          role: e.role,
+          hourlyRate: e.hourly_rate,
+          overtimeRate: e.overtime_rate,
+          dailyHours: e.daily_hours,
+          avatarUrl: e.avatar_url
+        })));
+      } else {
+        setEmployees(MOCK_EMPLOYEES);
+      }
+
+      // Fetch Logs
+      const { data: logData, error: logError } = await supabase
+        .from('time_logs')
+        .select('*')
+        .order('timestamp', { ascending: true });
+
+      if (logError) {
+        console.error('Error fetching logs:', logError);
+      } else if (logData) {
+        setLogs(logData.map(l => ({
+          id: l.id,
+          employeeId: l.employee_id,
+          employeeName: l.employee_name,
+          timestamp: new Date(l.timestamp),
+          type: l.type,
+          photoBase64: l.photo_base64,
+          verificationMessage: l.verification_message,
+          isVerified: l.is_verified
+        })));
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  // Sync PIN to local (sensitive, better kept local for now or in dedicated profile)
   useEffect(() => {
     localStorage.setItem('gil_ponto_admin_pin', adminPin);
   }, [adminPin]);
-
-  useEffect(() => {
-    localStorage.setItem('gil_ponto_employees', JSON.stringify(employees));
-  }, [employees]);
-
-  useEffect(() => {
-    localStorage.setItem('gil_ponto_logs', JSON.stringify(logs));
-  }, [logs]);
 
   // Clock updates
   useEffect(() => {
@@ -173,6 +204,24 @@ const App: React.FC = () => {
       isVerified: verification.faceDetected
     };
 
+    // Save to Supabase
+    const { error: logError } = await supabase
+      .from('time_logs')
+      .insert([{
+        id: newLog.id,
+        employee_id: newLog.employeeId,
+        employee_name: newLog.employeeName,
+        timestamp: newLog.timestamp.toISOString(),
+        type: newLog.type,
+        photo_base64: newLog.photoBase64,
+        verification_message: newLog.verificationMessage,
+        is_verified: newLog.isVerified
+      }]);
+
+    if (logError) {
+      console.error('Error saving log to Supabase:', logError);
+    }
+
     setLogs(prev => [...prev, newLog]);
 
     // Success sound for completion
@@ -189,19 +238,73 @@ const App: React.FC = () => {
     navigate('/welcome', { state: message });
   };
 
-  const handleAddEmployee = (newEmployee: Employee) => {
+  const handleAddEmployee = async (newEmployee: Employee) => {
+    const { error } = await supabase
+      .from('employees')
+      .insert([{
+        id: newEmployee.id,
+        name: newEmployee.name,
+        role: newEmployee.role,
+        hourly_rate: newEmployee.hourlyRate,
+        overtime_rate: newEmployee.overtimeRate,
+        daily_hours: newEmployee.dailyHours,
+        avatar_url: newEmployee.avatarUrl
+      }]);
+
+    if (error) {
+      console.error('Error adding employee to Supabase:', error);
+      alert('Erro ao salvar no banco de dados remoto.');
+      return;
+    }
     setEmployees(prev => [...prev, newEmployee]);
   };
 
-  const handleUpdateEmployee = (updatedEmployee: Employee) => {
+  const handleUpdateEmployee = async (updatedEmployee: Employee) => {
+    const { error } = await supabase
+      .from('employees')
+      .update({
+        name: updatedEmployee.name,
+        role: updatedEmployee.role,
+        hourly_rate: updatedEmployee.hourlyRate,
+        overtime_rate: updatedEmployee.overtimeRate,
+        daily_hours: updatedEmployee.dailyHours,
+        avatar_url: updatedEmployee.avatarUrl
+      })
+      .eq('id', updatedEmployee.id);
+
+    if (error) {
+      console.error('Error updating employee in Supabase:', error);
+      alert('Erro ao atualizar no banco de dados remoto.');
+      return;
+    }
     setEmployees(prev => prev.map(e => e.id === updatedEmployee.id ? updatedEmployee : e));
   };
 
-  const handleDeleteEmployee = (employeeId: string) => {
+  const handleDeleteEmployee = async (employeeId: string) => {
+    const { error } = await supabase
+      .from('employees')
+      .delete()
+      .eq('id', employeeId);
+
+    if (error) {
+      console.error('Error deleting employee from Supabase:', error);
+      alert('Erro ao excluir no banco de dados remoto.');
+      return;
+    }
     setEmployees(prev => prev.filter(e => e.id !== employeeId));
   };
 
-  const handleDeleteLog = (logId: string) => {
+  const handleDeleteLog = async (logId: string) => {
+    const { error } = await supabase
+      .from('time_logs')
+      .delete()
+      .eq('id', logId);
+
+    if (error) {
+      console.error('Error deleting log from Supabase:', error);
+      alert('Erro ao excluir registro no banco de dados remoto.');
+      return;
+    }
     setLogs(prev => prev.filter(l => l.id !== logId));
   };
 
