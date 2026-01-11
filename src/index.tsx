@@ -1,3 +1,4 @@
+alert("DEBUG: Script index.tsx em execução");
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
