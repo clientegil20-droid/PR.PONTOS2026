@@ -51,7 +51,7 @@ const WelcomeScreen: React.FC = () => {
             playSound('click');
             navigate('/');
           }}
-          className="px-10 py-5 bg-white text-slate-900 rounded-2xl font-bold text-lg hover:bg-slate-200 transition-all shadow-xl active:scale-95 flex items-center gap-3"
+          className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/40 active:scale-95 flex items-center gap-3 ring-2 ring-blue-500/30"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
@@ -375,7 +375,7 @@ const App: React.FC = () => {
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white truncate">{log.employeeName}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[10px] font-bold px-1.5 rounded-md tracking-wide ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
+                      <span className={`text-[10px] font-bold px-1.5 rounded-md ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
                         {log.type === 'IN' ? 'ENTROU' : 'SAIU'}
                       </span>
                       <span className="text-xs text-slate-400 font-mono">{log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>

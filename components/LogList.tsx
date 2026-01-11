@@ -262,12 +262,12 @@ const LogList: React.FC<LogListProps> = ({
         }
       }
     }
-    const totalPay = (regularHours * hourlyRate) + (overtimeHours * overtimeRate);
+    const totalPayValue = (regularHours * hourlyRate) + (overtimeHours * overtimeRate);
     return {
       totalHours: (regularHours + overtimeHours).toFixed(2),
       regularHours: regularHours.toFixed(2),
       overtimeHours: overtimeHours.toFixed(2),
-      pay: totalPay.toFixed(2)
+      pay: totalPayValue.toFixed(2)
     };
   };
 
@@ -385,8 +385,8 @@ const LogList: React.FC<LogListProps> = ({
                   </div>
                   <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-sm">
                     <p className="text-slate-400 text-sm font-medium mb-1">Funcionários Ativos</p>
-                    <p className="text-3xl font-bold text-blue-400">{employees.length - 2}</p>
-                    <p className="text-xs text-slate-500 mt-1">Excluindo Admin/Teste</p>
+                    <p className="text-3xl font-bold text-blue-400">{employees.filter(e => e.id !== '9999').length}</p>
+                    <p className="text-xs text-slate-500 mt-1">Total cadastrado</p>
                   </div>
                   <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-sm">
                     <p className="text-slate-400 text-sm font-medium mb-1">Verificação Facial</p>
