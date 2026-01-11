@@ -82,55 +82,58 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      try {
+        // Fetch PIN
+        const savedPin = localStorage.getItem('gil_ponto_admin_pin') || '9999';
+        setAdminPin(savedPin);
 
-      // Fetch PIN
-      const savedPin = localStorage.getItem('gil_ponto_admin_pin') || '9999';
-      setAdminPin(savedPin);
+        // Fetch Employees
+        const { data: empData, error: empError } = await supabase
+          .from('employees')
+          .select('*');
 
-      // Fetch Employees
-      const { data: empData, error: empError } = await supabase
-        .from('employees')
-        .select('*');
+        if (empError) {
+          console.error('Error fetching employees:', empError);
+          setEmployees(MOCK_EMPLOYEES);
+        } else if (empData && empData.length > 0) {
+          setEmployees(empData.map(e => ({
+            id: e.id,
+            name: e.name,
+            role: e.role,
+            hourlyRate: e.hourly_rate,
+            overtimeRate: e.overtime_rate,
+            dailyHours: e.daily_hours,
+            avatarUrl: e.avatar_url
+          })));
+        } else {
+          setEmployees(MOCK_EMPLOYEES);
+        }
 
-      if (empError) {
-        console.error('Error fetching employees:', empError);
-        setEmployees(MOCK_EMPLOYEES);
-      } else if (empData && empData.length > 0) {
-        setEmployees(empData.map(e => ({
-          id: e.id,
-          name: e.name,
-          role: e.role,
-          hourlyRate: e.hourly_rate,
-          overtimeRate: e.overtime_rate,
-          dailyHours: e.daily_hours,
-          avatarUrl: e.avatar_url
-        })));
-      } else {
-        setEmployees(MOCK_EMPLOYEES);
+        // Fetch Logs
+        const { data: logData, error: logError } = await supabase
+          .from('time_logs')
+          .select('*')
+          .order('timestamp', { ascending: true });
+
+        if (logError) {
+          console.error('Error fetching logs:', logError);
+        } else if (logData) {
+          setLogs(logData.map(l => ({
+            id: l.id,
+            employeeId: l.employee_id,
+            employeeName: l.employee_name,
+            timestamp: new Date(l.timestamp),
+            type: l.type,
+            photoBase64: l.photo_base64,
+            verificationMessage: l.verification_message,
+            isVerified: l.is_verified
+          })));
+        }
+      } catch (error) {
+        console.error('Initialization error:', error);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Fetch Logs
-      const { data: logData, error: logError } = await supabase
-        .from('time_logs')
-        .select('*')
-        .order('timestamp', { ascending: true });
-
-      if (logError) {
-        console.error('Error fetching logs:', logError);
-      } else if (logData) {
-        setLogs(logData.map(l => ({
-          id: l.id,
-          employeeId: l.employee_id,
-          employeeName: l.employee_name,
-          timestamp: new Date(l.timestamp),
-          type: l.type,
-          photoBase64: l.photo_base64,
-          verificationMessage: l.verification_message,
-          isVerified: l.is_verified
-        })));
-      }
-
-      setIsLoading(false);
     };
 
     fetchData();
