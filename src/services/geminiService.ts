@@ -51,7 +51,8 @@ export const verifyCheckInImage = async (base64Image: string, employeeName: stri
       throw new Error("No response from AI");
     }
 
-    const result = JSON.parse(text) as VerificationResult;
+    const cleanText = text.replace(/```json\n?|\n?```/g, '').trim();
+    const result = JSON.parse(cleanText) as VerificationResult;
     return result;
 
   } catch (error) {
