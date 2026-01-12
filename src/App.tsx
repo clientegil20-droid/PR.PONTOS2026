@@ -256,7 +256,7 @@ const App: React.FC = () => {
 
     if (error) {
       console.error('Error adding employee to Supabase:', error);
-      alert('Erro ao salvar no banco de dados remoto.');
+      alert(`Erro ao salvar no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
       return;
     }
     setEmployees(prev => [...prev, newEmployee]);
@@ -277,7 +277,7 @@ const App: React.FC = () => {
 
     if (error) {
       console.error('Error updating employee in Supabase:', error);
-      alert('Erro ao atualizar no banco de dados remoto.');
+      alert(`Erro ao atualizar no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
       return;
     }
     setEmployees(prev => prev.map(e => e.id === updatedEmployee.id ? updatedEmployee : e));
@@ -291,7 +291,7 @@ const App: React.FC = () => {
 
     if (error) {
       console.error('Error deleting employee from Supabase:', error);
-      alert('Erro ao excluir no banco de dados remoto.');
+      alert(`Erro ao excluir no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
       return;
     }
     setEmployees(prev => prev.filter(e => e.id !== employeeId));
@@ -305,7 +305,7 @@ const App: React.FC = () => {
 
     if (error) {
       console.error('Error deleting log from Supabase:', error);
-      alert('Erro ao excluir registro no banco de dados remoto.');
+      alert(`Erro ao excluir registro no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
       return;
     }
     setLogs(prev => prev.filter(l => l.id !== logId));
