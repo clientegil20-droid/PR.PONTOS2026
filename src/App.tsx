@@ -284,31 +284,41 @@ const App: React.FC = () => {
   };
 
   const handleDeleteEmployee = async (employeeId: string) => {
-    const { error } = await supabase
-      .from('employees')
-      .delete()
-      .eq('id', employeeId);
+    try {
+      const { error } = await supabase
+        .from('employees')
+        .delete()
+        .eq('id', employeeId);
 
-    if (error) {
-      console.error('Error deleting employee from Supabase:', error);
-      alert(`Erro ao excluir no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
-      return;
+      if (error) {
+        console.error('Error deleting employee from Supabase:', error);
+        alert(`Erro ao excluir no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
+        return;
+      }
+      setEmployees(prev => prev.filter(e => e.id !== employeeId));
+    } catch (err) {
+      console.error('Network or unexpected error during employee deletion:', err);
+      alert('Erro de conexão com o banco de dados. Verifique sua rede ou se o projeto Supabase está ativo. (Falha na requisição)');
     }
-    setEmployees(prev => prev.filter(e => e.id !== employeeId));
   };
 
   const handleDeleteLog = async (logId: string) => {
-    const { error } = await supabase
-      .from('time_logs')
-      .delete()
-      .eq('id', logId);
+    try {
+      const { error } = await supabase
+        .from('time_logs')
+        .delete()
+        .eq('id', logId);
 
-    if (error) {
-      console.error('Error deleting log from Supabase:', error);
-      alert(`Erro ao excluir registro no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
-      return;
+      if (error) {
+        console.error('Error deleting log from Supabase:', error);
+        alert(`Erro ao excluir registro no banco de dados remoto: ${error.message || JSON.stringify(error)}`);
+        return;
+      }
+      setLogs(prev => prev.filter(l => l.id !== logId));
+    } catch (err) {
+      console.error('Network or unexpected error during log deletion:', err);
+      alert('Erro de conexão com o banco de dados. Verifique sua rede ou se o projeto Supabase está ativo. (Falha na requisição)');
     }
-    setLogs(prev => prev.filter(l => l.id !== logId));
   };
 
   const handleUpdateAdminPin = (newPin: string) => {
