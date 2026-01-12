@@ -56,6 +56,9 @@ const LogList: React.FC<LogListProps> = ({
   const [successScreenData, setSuccessScreenData] = useState<{ title: string, message: string } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ type: 'log' | 'employee', id: string } | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
+  const [diagnosticResult, setDiagnosticResult] = useState<string>('');
+  const [isDiagnosing, setIsDiagnosing] = useState(false);
 
   // Settings Form State
   const [currentPinInput, setCurrentPinInput] = useState('');
@@ -321,6 +324,15 @@ const LogList: React.FC<LogListProps> = ({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
               Segurança
+            </button>
+            <button
+              onClick={() => setShowDiagnostic(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-amber-900/30"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              Diagnóstico
             </button>
             <button
               onClick={onClose}
@@ -866,6 +878,111 @@ const LogList: React.FC<LogListProps> = ({
                   <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold">Salvar</button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+        {/* MODAL: DIAGNOSTIC */}
+        {showDiagnostic && (
+          <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+            <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <span className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></span>
+                  Diagnóstico de Rede Supabase
+                </h3>
+                <button onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }} className="text-slate-400 hover:text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto mb-6 bg-slate-900 rounded-xl p-4 font-mono text-sm text-blue-300 space-y-2 border border-slate-700">
+                {diagnosticResult ? (
+                  <div className="whitespace-pre-wrap">{diagnosticResult}</div>
+                ) : (
+                  <div className="text-slate-500 text-center py-10">Clique em "Iniciar Teste" para analisar a conexão.</div>
+                )}
+                {isDiagnosing && (
+                  <div className="flex items-center gap-2 text-blue-400 animate-pulse">
+                    <svg className="animate-spin h-4 w-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Executando testes de conectividade...</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={async () => {
+                    setIsDiagnosing(true);
+                    setDiagnosticResult(`[${new Date().toLocaleTimeString()}] Iniciando diagnóstico...\n`);
+                    let log = (msg: string) => setDiagnosticResult(prev => prev + `[${new Date().toLocaleTimeString()}] ${msg}\n`);
+
+                    try {
+                      const url = (import.meta as any).env.VITE_SUPABASE_URL || '';
+                      const key = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
+
+                      log(`Config: URL=${url ? 'OK' : 'MISSING'}, Key=${key ? 'OK' : 'MISSING'}`);
+
+                      if (!url) {
+                        log(`ERRO: VITE_SUPABASE_URL não definida.`);
+                        setIsDiagnosing(false);
+                        return;
+                      }
+
+                      log(`Testando ping (Health Check): ${url}/rest/v1/`);
+                      const start = Date.now();
+                      try {
+                        const res = await fetch(`${url}/rest/v1/`, {
+                          method: 'GET',
+                          headers: { 'apikey': key }
+                        });
+                        const end = Date.now();
+                        log(`Resultado fetch: Status ${res.status} (${res.statusText}) em ${end - start}ms`);
+
+                        if (res.ok) {
+                          log(`SUCESSO: Conexão básica estabelecida.`);
+                        } else {
+                          log(`ALERTA: O servidor respondeu, mas com erro status ${res.status}. Verifique se a API Key é válida.`);
+                        }
+                      } catch (e) {
+                        log(`ERRO CRÍTICO: Falha ao alcançar o servidor: ${String(e)}`);
+                        log(`Sugestão: Verifique se o projeto não está pausado no painel da Supabase ou se há bloqueio de firewall.`);
+                      }
+
+                      log(`Testando CORS (OPTIONS)...`);
+                      try {
+                        const res = await fetch(`${url}/rest/v1/employees`, {
+                          method: 'OPTIONS',
+                          headers: { 'apikey': key }
+                        });
+                        log(`OPTIONS response: ${res.status} ${res.statusText}`);
+                      } catch (e) {
+                        log(`ERRO CORS: Falha no preflight: ${String(e)}`);
+                      }
+
+                      log(`Diagnóstico concluído.`);
+                    } catch (e) {
+                      log(`ERRO NÃO TRATADO: ${String(e)}`);
+                    } finally {
+                      setIsDiagnosing(false);
+                    }
+                  }}
+                  disabled={isDiagnosing}
+                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
+                >
+                  {isDiagnosing ? 'Testando...' : 'Iniciar Teste'}
+                </button>
+                <button
+                  onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }}
+                  className="px-6 py-3 bg-slate-700 text-slate-200 rounded-xl font-bold"
+                >
+                  Fechar
+                </button>
+              </div>
             </div>
           </div>
         )}
