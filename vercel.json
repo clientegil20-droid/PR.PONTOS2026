@@ -1,5 +1,4 @@
 {
-    "cloudVercelToolbar": false,
     "rewrites": [
         {
             "source": "/assets/(.*)",

@@ -2,6 +2,19 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Employee, TimeLog } from '../types';
 import { COMPANY_NAME } from '../constants';
 
+// --- CONSTANTS ---
+const COMPANY_HOLIDAYS = [
+  '01/01', // Ano Novo
+  '21/04', // Tiradentes
+  '01/05', // Dia do Trabalho
+  '07/09', // Independência
+  '12/10', // Nossa Sra. Aparecida
+  '02/11', // Finados
+  '15/11', // Proclamação da República
+  '20/11', // Consciência Negra
+  '25/12'  // Natal
+];
+
 // --- PERFORMANCE: MEMOIZED SUB-COMPONENTS ---
 
 const LogCard = React.memo(({ log, onDelete }: { log: TimeLog; onDelete: (type: 'log' | 'employee', id: string) => void }) => {
@@ -329,14 +342,60 @@ const LogList: React.FC<LogListProps> = ({
       });
 
       const totalH = totalMs / (1000 * 60 * 60);
-      const isWeekend = sortedLogs[0].timestamp.getDay() === 0 || sortedLogs[0].timestamp.getDay() === 6;
 
-      if (isWeekend) {
+      const firstLogDate = sortedLogs[0].timestamp;
+      const isWeekend = firstLogDate.getDay() === 0 || firstLogDate.getDay() === 6;
+      const dateStr = firstLogDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const isHoliday = COMPANY_HOLIDAYS.includes(dateStr);
+
+      if (isWeekend || isHoliday) {
         summary.extraHours = totalH;
         summary.regularHours = 0;
       } else {
-        summary.regularHours = Math.min(totalH, contractHours);
-        summary.extraHours = Math.max(0, totalH - contractHours);
+        // Commercial Hours Logic: 08:00 - 18:00
+        // Calculate hours worked outside this range
+        let extraOutsideRangeMs = 0;
+        let lastInTime: Date | null = null;
+
+        sortedLogs.forEach(l => {
+          if (l.type === 'IN') {
+            lastInTime = l.timestamp;
+          } else if (l.type === 'OUT' && lastInTime) {
+            const start = lastInTime;
+            const end = l.timestamp;
+
+            // Define commercial range for this day
+            const commercialStart = new Date(start);
+            commercialStart.setHours(8, 0, 0, 0);
+            const commercialEnd = new Date(start);
+            commercialEnd.setHours(18, 0, 0, 0);
+
+            // Time before 08:00
+            if (start < commercialStart) {
+              const beforeMs = Math.min(end.getTime(), commercialStart.getTime()) - start.getTime();
+              extraOutsideRangeMs += Math.max(0, beforeMs);
+            }
+
+            // Time after 18:00
+            if (end > commercialEnd) {
+              const afterMs = end.getTime() - Math.max(start.getTime(), commercialEnd.getTime());
+              extraOutsideRangeMs += Math.max(0, afterMs);
+            }
+            lastInTime = null;
+          }
+        });
+
+        const extraOutsideH = extraOutsideRangeMs / (1000 * 60 * 60);
+
+        // Regular hours are matches up to contract, but only those within commercial range
+        // Any hour outside commercial is ALREADY extra.
+        // If total hours exceed contract, the excess IS extra.
+        // We take the max of the two strategies to be "pro-employee" or follow standard rules.
+        // Standard rule: (Hours > Contract) OR (Hours outside range) = Extra.
+
+        const possibleRegularH = totalH - extraOutsideH;
+        summary.regularHours = Math.min(possibleRegularH, contractHours);
+        summary.extraHours = extraOutsideH + Math.max(0, possibleRegularH - contractHours);
       }
       summary.totalHours = totalH;
     });
@@ -1481,8 +1540,8 @@ const LogList: React.FC<LogListProps> = ({
         {printData && (
           <div className="font-sans text-black p-8">
             <h1 className="text-2xl font-bold mb-1">{COMPANY_NAME}</h1>
-            <h2 className="text-lg font-bold mb-2">{printData.title}</h2>
-            <p className="mb-4 text-sm text-gray-600">{printData.subtitle}</p>
+            <h2 className="text-lg font-bold mb-2">{printData?.title || 'Relatório'}</h2>
+            <p className="mb-4 text-sm text-gray-600">{printData?.subtitle || ''}</p>
 
             <table className="w-full text-left border-collapse border border-black text-xs">
               <thead>
@@ -1519,12 +1578,12 @@ const LogList: React.FC<LogListProps> = ({
       {
         notification && (
           <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-bounce-short">
-            <div className={`px-6 py-4 rounded-3xl shadow-2xl border backdrop-blur-xl flex items-center gap-3 ${notification.type === 'success' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' :
-              notification.type === 'error' ? 'bg-rose-500/20 border-rose-500/50 text-rose-400' :
+            <div className={`px-6 py-4 rounded-3xl shadow-2xl border backdrop-blur-xl flex items-center gap-3 ${notification?.type === 'success' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' :
+              notification?.type === 'error' ? 'bg-rose-500/20 border-rose-500/50 text-rose-400' :
                 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400'
               }`}>
-              <div className={`w-2 h-2 rounded-full animate-pulse ${notification.type === 'success' ? 'bg-emerald-400' : notification.type === 'error' ? 'bg-rose-400' : 'bg-indigo-400'}`} />
-              <span className="text-xs font-black uppercase tracking-widest">{notification.message}</span>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${notification?.type === 'success' ? 'bg-emerald-400' : notification?.type === 'error' ? 'bg-rose-400' : 'bg-indigo-400'}`} />
+              <span className="text-xs font-black uppercase tracking-widest">{notification?.message || ''}</span>
             </div>
           </div>
         )
