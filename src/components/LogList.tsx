@@ -413,44 +413,48 @@ const LogList: React.FC<LogListProps> = ({
             {activeTab === 'dashboard' && (
               <div className="space-y-8 animate-slide-up">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-500">
-                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Colaboradores</p>
-                    <div className="flex items-end gap-2">
-                      <p className="text-4xl font-extrabold text-white leading-none">{employees.filter(e => e.id !== '9999').length}</p>
-                      <span className="text-emerald-400 text-xs font-bold mb-1 flex items-center gap-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
-                          <path fillRule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.25a.75.75 0 011.08 0l5.25 5.25a.75.75 0 11-1.08 1.04l-3.96-3.908V16.25A.75.75 0 0110 17z" clipRule="evenodd" />
-                        </svg>
-                        Total
-                      </span>
+                  {/* Total Employees */}
+                  <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-500">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700"></div>
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Colaboradores</p>
+                    <div className="flex items-end gap-3">
+                      <p className="text-5xl font-black text-white leading-none tracking-tighter">{employees.filter(e => e.id !== '9999').length}</p>
+                      <div className="flex flex-col mb-1">
+                        <span className="text-emerald-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                          Ativos
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-500">
-                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Setores Ativos</p>
-                    <div className="flex items-end gap-2">
-                      <p className="text-4xl font-extrabold text-white leading-none">{new Set(employees.filter(e => e.id !== '9999').map(e => e.department)).size}</p>
-                      <span className="text-indigo-400 text-xs font-bold mb-1 whitespace-nowrap">Estrutura Org.</span>
+                  {/* Departments */}
+                  <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-purple-500/30 transition-all duration-500">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all duration-700"></div>
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Setores Ativos</p>
+                    <div className="flex items-end gap-3">
+                      <p className="text-5xl font-black text-white leading-none tracking-tighter">{new Set(employees.filter(e => e.id !== '9999').map(e => e.department)).size}</p>
+                      <span className="text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-1">Estrutura Org.</span>
                     </div>
                   </div>
 
-                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-500">
-                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Status: Ativos</p>
-                    <div className="flex items-end gap-2">
-                      <p className="text-4xl font-extrabold text-emerald-400 leading-none">{employees.filter(e => e.status === 'active' && e.id !== '9999').length}</p>
-                      <span className="text-slate-500 text-xs font-bold mb-1">On-duty</span>
+                  {/* Active Now */}
+                  <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-500">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-700"></div>
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Status: Ativos</p>
+                    <div className="flex items-end gap-3">
+                      <p className="text-5xl font-black text-emerald-400 leading-none tracking-tighter">{employees.filter(e => e.status === 'active' && e.id !== '9999').length}</p>
+                      <span className="text-emerald-500/50 text-[10px] font-black uppercase tracking-widest mb-1 animate-pulse">On-duty</span>
                     </div>
                   </div>
 
-                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-amber-500/30 transition-all duration-500">
-                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Calendário</p>
+                  {/* Calendar Widget */}
+                  <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-amber-500/30 transition-all duration-500">
+                    <div className="absolute -right-6 -top-6 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl group-hover:bg-amber-500/20 transition-all duration-700"></div>
+                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mb-3">Calendário</p>
                     <div className="flex flex-col">
-                      <p className="text-2xl font-extrabold text-white leading-none mb-1">{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
-                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric' })}</p>
+                      <p className="text-3xl font-black text-white leading-none mb-2 tracking-tight">{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase()}</p>
+                      <p className="text-[10px] text-slate-500 font-extrabold uppercase tracking-widest">{new Date().toLocaleDateString('pt-BR', { weekday: 'long' })}</p>
                     </div>
                   </div>
                 </div>
@@ -817,44 +821,45 @@ const LogList: React.FC<LogListProps> = ({
                     </h3>
                   </div>
 
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                     {employees.filter(e => e.id !== '9999').map(emp => (
-                      <div key={emp.id} className="glass-card p-6 rounded-[2rem] border border-white/5 hover:border-indigo-500/30 transition-all group relative overflow-hidden flex items-center gap-6">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full"></div>
+                      <div key={emp.id} className="glass-card-light p-6 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/30 transition-all group relative overflow-hidden flex items-center gap-6 hover:shadow-2xl hover:shadow-indigo-900/10">
+                        <div className="absolute -right-4 -top-4 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full group-hover:bg-indigo-500/10 transition-all duration-700"></div>
 
-                        <div className="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center text-indigo-400 font-black text-xl shadow-inner border border-white/5 relative z-10">
-                          {emp.name.charAt(0)}
+                        <div className="w-20 h-20 bg-slate-950 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-inner border border-white/5 relative z-10 group-hover:border-indigo-500/30 transition-all duration-500 overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                          <span className="relative z-10 text-indigo-400 group-hover:text-white transition-colors">{emp.name.charAt(0)}</span>
                         </div>
 
                         <div className="flex-1 relative z-10">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-black text-white text-lg tracking-tight truncate max-w-[150px]">{emp.name}</h4>
-                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                              emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                                'bg-slate-700/50 text-slate-400 border border-slate-600/30'
+                          <div className="flex items-center gap-3 mb-2">
+                            <h4 className="font-extrabold text-white text-xl tracking-tighter truncate max-w-[180px]">{emp.name}</h4>
+                            <span className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                              emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                'bg-slate-700/20 text-slate-500 border-white/5'
                               }`}>
                               {emp.status === 'active' ? 'Ativo' : emp.status === 'on_vacation' ? 'Férias' : 'Inativo'}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 gap-y-1 gap-x-4 border-t border-white/5 pt-3">
+                          <div className="flex items-center gap-4 border-t border-white/5 pt-4">
                             <div className="flex flex-col">
-                              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Remuneração</span>
-                              <span className="text-xs text-white font-black">R$ {emp.hourlyRate?.toFixed(2) || '0.00'} <small className="text-[8px] text-slate-500 font-normal">/h</small></span>
+                              <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">Setor / ID</span>
+                              <span className="text-xs text-slate-300 font-bold">{emp.department} • <span className="font-mono text-indigo-400">{emp.id}</span></span>
                             </div>
-                            <div className="flex flex-col">
-                              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Carga Diária</span>
-                              <span className="text-xs text-white font-black">{emp.dailyHours}h</span>
+                            <div className="flex flex-col border-l border-white/5 pl-4">
+                              <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">Remuneração</span>
+                              <span className="text-xs text-white font-black italic">R$ {emp.hourlyRate?.toFixed(2) || '0.00'}<small className="text-[8px] text-slate-600 font-normal not-italic">/h</small></span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="flex flex-col gap-2 relative z-10">
+                        <div className="flex flex-col gap-3 relative z-10">
                           <button
                             onClick={() => setEditingEmployee(emp)}
-                            className="p-2.5 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-500 hover:text-white rounded-xl transition-all border border-indigo-500/20 active:scale-95 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]"
-                            title="Editar Dados"
+                            className="p-3 bg-slate-900/50 hover:bg-white text-indigo-400 hover:text-slate-950 rounded-2xl transition-all border border-white/5 hover:border-transparent active:scale-90 shadow-lg group-hover:shadow-indigo-500/20"
+                            title="Editar Perfil"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                             </svg>
                           </button>
@@ -863,11 +868,11 @@ const LogList: React.FC<LogListProps> = ({
                               setDeleteTarget({ type: 'employee', id: emp.id });
                               setPasswordInput('');
                             }}
-                            className="p-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20 active:scale-95"
-                            title="Remover do Sistema"
+                            className="p-3 bg-slate-900/50 hover:bg-red-500 text-slate-500 hover:text-white rounded-2xl transition-all border border-white/5 hover:border-transparent active:scale-90"
+                            title="Remover Registros"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                             </svg>
                           </button>
                         </div>
@@ -955,29 +960,29 @@ const LogList: React.FC<LogListProps> = ({
 
                       <div className="pt-2">
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
-                        <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400 font-medium">Hora Regular</span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                        <div className="bg-slate-950/40 border border-white/5 p-5 rounded-[2rem] space-y-4">
+                          <div className="flex justify-between items-center group/item">
+                            <span className="text-xs text-slate-500 font-bold group-hover/item:text-slate-300 transition-colors">Taxa Regular</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-700 font-black">BRL</span>
                               <input
                                 type="number"
                                 value={editingEmployee.hourlyRate || 0}
                                 onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
-                                className="w-16 bg-transparent text-right text-indigo-400 font-black outline-none"
+                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-indigo-400 transition-colors"
                                 step="0.01"
                               />
                             </div>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400 font-medium">Hora Extra</span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                          <div className="flex justify-between items-center group/item">
+                            <span className="text-xs text-slate-500 font-bold group-hover/item:text-slate-300 transition-colors">Taxa Extra</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-700 font-black">BRL</span>
                               <input
                                 type="number"
                                 value={editingEmployee.overtimeRate}
                                 onChange={(e) => setEditingEmployee({ ...editingEmployee, overtimeRate: parseFloat(e.target.value) })}
-                                className="w-16 bg-transparent text-right text-purple-400 font-black outline-none"
+                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-purple-400 transition-colors"
                                 step="0.01"
                               />
                             </div>
@@ -985,19 +990,19 @@ const LogList: React.FC<LogListProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex gap-3 mt-8">
+                      <div className="flex gap-4 mt-10">
                         <button
                           type="button"
                           onClick={() => setEditingEmployee(null)}
-                          className="flex-1 py-4 bg-slate-800/50 text-slate-400 hover:text-white rounded-2xl font-bold transition-all border border-slate-700/50 active:scale-95"
+                          className="flex-1 py-5 bg-slate-900/50 text-slate-500 hover:text-white rounded-2xl font-black transition-all border border-white/5 active:scale-95 uppercase text-[10px] tracking-widest"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
-                          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-indigo-900/40 active:scale-95 uppercase text-xs tracking-widest"
+                          className="flex-1 py-5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black transition-all shadow-2xl shadow-indigo-900/40 active:scale-95 uppercase text-[10px] tracking-[0.2em]"
                         >
-                          Salvar Alterações
+                          Salvar
                         </button>
                       </div>
                     </form>
@@ -1048,16 +1053,16 @@ const LogList: React.FC<LogListProps> = ({
                       autoFocus
                     />
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-4">
                       <button
                         onClick={() => { setDeleteTarget(null); setPasswordInput(''); }}
-                        className="flex-1 py-4 bg-slate-800/50 text-slate-400 hover:text-white rounded-2xl font-bold border border-slate-700/50 transition-all active:scale-95"
+                        className="flex-1 py-5 bg-slate-900/50 text-slate-500 hover:text-white rounded-2xl font-black border border-white/5 transition-all active:scale-95 uppercase text-[10px] tracking-widest"
                       >
                         Voltar
                       </button>
                       <button
                         onClick={confirmDelete}
-                        className="flex-1 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-red-900/40 active:scale-95 uppercase text-xs tracking-widest"
+                        className="flex-1 py-5 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-black transition-all shadow-2xl shadow-red-900/40 active:scale-95 uppercase text-[10px] tracking-[0.2em]"
                       >
                         Confirmar
                       </button>
@@ -1108,17 +1113,17 @@ const LogList: React.FC<LogListProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex gap-3">
+                      <div className="flex gap-4">
                         <button
                           type="button"
                           onClick={() => setShowSettingsModal(false)}
-                          className="flex-1 py-4 bg-slate-800/50 text-slate-400 hover:text-white rounded-2xl font-bold border border-slate-700/50 transition-all active:scale-95"
+                          className="flex-1 py-5 bg-slate-900/50 text-slate-500 hover:text-white rounded-2xl font-black border border-white/5 transition-all active:scale-95 uppercase text-[10px] tracking-widest"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
-                          className="flex-1 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-indigo-900/40 active:scale-95 uppercase text-xs tracking-widest"
+                          className="flex-1 py-5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black transition-all shadow-2xl shadow-indigo-900/40 active:scale-95 uppercase text-[10px] tracking-[0.2em]"
                         >
                           Salvar
                         </button>
@@ -1142,8 +1147,8 @@ const LogList: React.FC<LogListProps> = ({
                           </svg>
                         </div>
                         <div>
-                          <h3 className="text-xl font-extrabold text-white tracking-tight">Status da Infraestrutura</h3>
-                          <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Diagnóstico de Rede Supabase</p>
+                          <h3 className="text-xl font-black text-white tracking-tighter">Status da Infraestrutura</h3>
+                          <p className="text-[10px] text-slate-500 font-extrabold uppercase tracking-[0.2em]">Diagnóstico de Rede Supabase</p>
                         </div>
                       </div>
                       <button onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }} className="p-2 bg-slate-800 rounded-xl text-slate-500 hover:text-white transition-colors">
