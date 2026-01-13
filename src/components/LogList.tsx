@@ -2,6 +2,118 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Employee, TimeLog } from '../types';
 import { COMPANY_NAME } from '../constants';
 
+// --- PERFORMANCE: MEMOIZED SUB-COMPONENTS ---
+
+const LogCard = React.memo(({ log, onDelete }: { log: TimeLog; onDelete: (type: 'log' | 'employee', id: string) => void }) => {
+  return (
+    <div className="group glass-card-light p-5 rounded-[2rem] border border-white/5 hover:border-indigo-500/30 transition-all flex flex-col sm:flex-row gap-6 items-center hover:shadow-2xl hover:shadow-indigo-900/10">
+      <div className="relative w-16 h-16 bg-slate-950 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 shadow-inner group-hover:border-indigo-400 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
+        <img
+          src={log.photoBase64}
+          alt="Check-in"
+          className="w-full h-full object-cover brightness-75 grayscale-[20%] group-hover:brightness-105 group-hover:grayscale-0 transition-all duration-500"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent group-hover:opacity-0 transition-opacity duration-500"></div>
+      </div>
+
+      <div className="flex-1 min-w-0 text-center sm:text-left">
+        <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+          <h4 className="text-white font-extrabold tracking-tight truncate">{log.employeeName}</h4>
+          <span className="text-[10px] text-indigo-400 font-mono font-bold">({log.employeeId})</span>
+        </div>
+        <div className="flex items-center justify-center sm:justify-start gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          <span className="flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-slate-600">
+              <path fillRule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clipRule="evenodd" />
+            </svg>
+            {log.timestamp.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+          </span>
+          <span className="w-1 h-1 bg-slate-800 rounded-full"></span>
+          <span className="text-slate-300">{log.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        {!log.isVerified && (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-tighter">
+            <span className="w-1 h-1 bg-red-500 rounded-full animate-pulse"></span>
+            IA: Inconsistente
+          </div>
+        )}
+
+        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase w-24 text-center border ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+          {log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}
+        </span>
+        <button
+          onClick={() => onDelete('log', log.id)}
+          className="p-3 bg-slate-900/50 hover:bg-red-500/20 text-slate-500 hover:text-red-400 rounded-2xl transition-all border border-white/5 hover:border-red-500/30 active:scale-95"
+          title="Remover Registro"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+});
+
+const EmployeeCard = React.memo(({ emp, onEdit, onDelete }: { emp: Employee; onEdit: (e: Employee) => void; onDelete: (type: 'log' | 'employee', id: string) => void }) => {
+  return (
+    <div key={emp.id} className="glass-card-light p-6 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/30 transition-all group relative overflow-hidden flex items-center gap-6 hover:shadow-2xl hover:shadow-indigo-900/10">
+      <div className="absolute -right-4 -top-4 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full group-hover:bg-indigo-500/10 transition-all duration-700"></div>
+
+      <div className="w-20 h-20 bg-slate-950 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-inner border border-white/5 relative z-10 group-hover:border-indigo-500/30 transition-all duration-500 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <span className="relative z-10 text-indigo-400 group-hover:text-white transition-colors">{emp.name.charAt(0)}</span>
+      </div>
+
+      <div className="flex-1 relative z-10">
+        <div className="flex items-center gap-3 mb-2">
+          <h4 className="font-extrabold text-white text-xl tracking-tighter truncate max-w-[180px]">{emp.name}</h4>
+          <span className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+            emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+              'bg-slate-700/20 text-slate-500 border-white/5'
+            }`}>
+            {emp.status === 'active' ? 'Ativo' : emp.status === 'on_vacation' ? 'Férias' : 'Inativo'}
+          </span>
+        </div>
+        <div className="flex items-center gap-4 border-t border-white/5 pt-4">
+          <div className="flex flex-col">
+            <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">Setor / ID</span>
+            <span className="text-xs text-slate-300 font-bold">{emp.department} • <span className="font-mono text-indigo-400">{emp.id}</span></span>
+          </div>
+          <div className="flex flex-col border-l border-white/5 pl-4">
+            <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">Remuneração</span>
+            <span className="text-xs text-white font-black italic">R$ {emp.hourlyRate?.toFixed(2) || '0.00'}<small className="text-[8px] text-slate-600 font-normal not-italic">/h</small></span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 relative z-10">
+        <button
+          onClick={() => onEdit(emp)}
+          className="p-3 bg-slate-900/50 hover:bg-white text-indigo-400 hover:text-slate-950 rounded-2xl transition-all border border-white/5 hover:border-transparent active:scale-90 shadow-lg group-hover:shadow-indigo-500/20"
+          title="Editar Perfil"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+          </svg>
+        </button>
+        <button
+          onClick={() => onDelete('employee', emp.id)}
+          className="p-3 bg-slate-900/50 hover:bg-red-500 text-slate-500 hover:text-white rounded-2xl transition-all border border-white/5 hover:border-transparent active:scale-90"
+          title="Remover Registros"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244 2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+});
+
 interface LogListProps {
   logs: TimeLog[];
   employees: Employee[];
@@ -580,53 +692,14 @@ const LogList: React.FC<LogListProps> = ({
                     </div>
                   ) : (
                     filteredLogs.map((log) => (
-                      <div key={log.id} className="group glass-card-light p-5 rounded-[2rem] border border-white/5 hover:border-indigo-500/30 transition-all flex flex-col sm:flex-row gap-6 items-center hover:shadow-2xl hover:shadow-indigo-900/10">
-                        {/* Styled Image Container */}
-                        <div className="relative w-16 h-16 bg-slate-950 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 shadow-inner group-hover:border-indigo-400 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
-                          <img
-                            src={log.photoBase64}
-                            alt="Check-in"
-                            className="w-full h-full object-cover brightness-75 grayscale-[20%] group-hover:brightness-105 group-hover:grayscale-0 transition-all duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent group-hover:opacity-0 transition-opacity duration-500"></div>
-                        </div>
-
-                        <div className="flex-1 min-w-0 text-center sm:text-left">
-                          <h4 className="font-extrabold text-white text-lg tracking-tight truncate mb-1">{log.employeeName}</h4>
-                          <div className="flex items-center justify-center sm:justify-start gap-3 text-[10px] text-slate-500 font-black uppercase tracking-widest">
-                            <span className="bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">{log.employeeId}</span>
-                            <span>{log.timestamp.toLocaleDateString('pt-BR')}</span>
-                            <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
-                            <span className="text-slate-300">{log.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          {/* Status Badge */}
-                          {!log.isVerified && (
-                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-tighter">
-                              <span className="w-1 h-1 bg-red-500 rounded-full animate-pulse"></span>
-                              IA: Inconsistente
-                            </div>
-                          )}
-
-                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase w-24 text-center border ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
-                            {log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}
-                          </span>
-                          <button
-                            onClick={() => {
-                              setDeleteTarget({ type: 'log', id: log.id });
-                              setPasswordInput('');
-                            }}
-                            className="p-3 bg-slate-900/50 hover:bg-red-500/20 text-slate-500 hover:text-red-400 rounded-2xl transition-all border border-white/5 hover:border-red-500/30 active:scale-95"
-                            title="Remover Registro"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
+                      <LogCard
+                        key={log.id}
+                        log={log}
+                        onDelete={(type, id) => {
+                          setDeleteTarget({ type, id });
+                          setPasswordInput('');
+                        }}
+                      />
                     ))
                   )}
                 </div>
@@ -796,60 +869,15 @@ const LogList: React.FC<LogListProps> = ({
 
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
                     {employees.filter(e => e.id !== '9999').map(emp => (
-                      <div key={emp.id} className="glass-card-light p-6 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/30 transition-all group relative overflow-hidden flex items-center gap-6 hover:shadow-2xl hover:shadow-indigo-900/10">
-                        <div className="absolute -right-4 -top-4 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full group-hover:bg-indigo-500/10 transition-all duration-700"></div>
-
-                        <div className="w-20 h-20 bg-slate-950 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-inner border border-white/5 relative z-10 group-hover:border-indigo-500/30 transition-all duration-500 overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                          <span className="relative z-10 text-indigo-400 group-hover:text-white transition-colors">{emp.name.charAt(0)}</span>
-                        </div>
-
-                        <div className="flex-1 relative z-10">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h4 className="font-extrabold text-white text-xl tracking-tighter truncate max-w-[180px]">{emp.name}</h4>
-                            <span className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                              emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                                'bg-slate-700/20 text-slate-500 border-white/5'
-                              }`}>
-                              {emp.status === 'active' ? 'Ativo' : emp.status === 'on_vacation' ? 'Férias' : 'Inativo'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4 border-t border-white/5 pt-4">
-                            <div className="flex flex-col">
-                              <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">Setor / ID</span>
-                              <span className="text-xs text-slate-300 font-bold">{emp.department} • <span className="font-mono text-indigo-400">{emp.id}</span></span>
-                            </div>
-                            <div className="flex flex-col border-l border-white/5 pl-4">
-                              <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mb-1">Remuneração</span>
-                              <span className="text-xs text-white font-black italic">R$ {emp.hourlyRate?.toFixed(2) || '0.00'}<small className="text-[8px] text-slate-600 font-normal not-italic">/h</small></span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3 relative z-10">
-                          <button
-                            onClick={() => setEditingEmployee(emp)}
-                            className="p-3 bg-slate-900/50 hover:bg-white text-indigo-400 hover:text-slate-950 rounded-2xl transition-all border border-white/5 hover:border-transparent active:scale-90 shadow-lg group-hover:shadow-indigo-500/20"
-                            title="Editar Perfil"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setDeleteTarget({ type: 'employee', id: emp.id });
-                              setPasswordInput('');
-                            }}
-                            className="p-3 bg-slate-900/50 hover:bg-red-500 text-slate-500 hover:text-white rounded-2xl transition-all border border-white/5 hover:border-transparent active:scale-90"
-                            title="Remover Registros"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
+                      <EmployeeCard
+                        key={emp.id}
+                        emp={emp}
+                        onEdit={setEditingEmployee}
+                        onDelete={(type, id) => {
+                          setDeleteTarget({ type, id });
+                          setPasswordInput('');
+                        }}
+                      />
                     ))}
                   </div>
                 </div>

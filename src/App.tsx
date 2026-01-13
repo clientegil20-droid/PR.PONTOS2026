@@ -9,6 +9,29 @@ import { verifyCheckInImage } from './services/geminiService';
 import { playSound } from './utils/sound';
 import { supabase } from './services/supabase';
 
+// --- SUB-COMPONENTS FOR PERFORMANCE ---
+const ClockDisplay: React.FC = () => {
+  const [time, setTime] = React.useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="text-center space-y-2">
+      <h1 className="text-7xl font-black mb-2 tracking-tighter text-white font-outfit drop-shadow-2xl">
+        {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </h1>
+      <p className="text-indigo-300/60 font-black uppercase tracking-[0.3em] text-[10px] bg-indigo-500/5 py-1 px-4 rounded-full border border-indigo-500/10 inline-block">
+        {time.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+      </p>
+    </div>
+  );
+};
+
+const MemoizedLogList = React.memo(LogList);
+
 const WelcomeScreen: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -80,7 +103,6 @@ const App: React.FC = () => {
 
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
 
   // Load data from Supabase on init
@@ -148,18 +170,12 @@ const App: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [adminPin]);
 
   // Sync PIN to local (sensitive, better kept local for now or in dedicated profile)
   useEffect(() => {
     localStorage.setItem('gil_ponto_admin_pin', adminPin);
   }, [adminPin]);
-
-  // Clock updates
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // --- Handlers ---
 
@@ -381,14 +397,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-center space-y-2">
-          <h1 className="text-7xl font-black mb-2 tracking-tighter text-white font-outfit drop-shadow-2xl">
-            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </h1>
-          <p className="text-indigo-300/60 font-black uppercase tracking-[0.3em] text-[10px] bg-indigo-500/5 py-1 px-4 rounded-full border border-indigo-500/10 inline-block">
-            {currentTime.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
-        </div>
+        <ClockDisplay />
 
         <div className="mt-16 flex flex-col items-center gap-4">
           <div className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(79,70,229,0.3)] animate-bounce active:scale-95 transition-all">
@@ -534,7 +543,7 @@ const App: React.FC = () => {
       <Routes>
         {/* Admin Route */}
         <Route path="/admin" element={
-          <LogList
+          <MemoizedLogList
             logs={logs}
             employees={employees}
             onAddEmployee={handleAddEmployee}
