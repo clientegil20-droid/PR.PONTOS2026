@@ -2,10 +2,16 @@ export interface Employee {
   id: string;
   name: string;
   role: string;
-  avatarUrl?: string; // Placeholder for UI
-  hourlyRate: number; // Value per hour in currency
-  overtimeRate: number; // Value per overtime hour
-  dailyHours: number; // Contracted hours per day (e.g., 8, 6, 4)
+  department: string;
+  email?: string;
+  phone?: string;
+  cpf?: string;
+  hireDate?: string;
+  status: 'active' | 'inactive' | 'on_vacation';
+  avatarUrl?: string;
+  hourlyRate: number;
+  overtimeRate: number;
+  dailyHours: number;
 }
 
 export interface TimeLog {
