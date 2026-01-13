@@ -732,15 +732,16 @@ const LogList: React.FC<LogListProps> = ({
                       Novo Colaborador
                     </h3>
                     <form onSubmit={handleRegisterEmployee} className="space-y-4">
+                      {/* Identificação: PIN + Nome */}
                       <div>
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Identificação</label>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-4 gap-2">
                           <input
                             type="text"
                             placeholder="PIN"
                             value={newId}
                             onChange={(e) => setNewId(e.target.value)}
-                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-4 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-black text-center"
+                            className="bg-slate-950/40 border border-white/5 rounded-2xl px-4 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-black text-center"
                             required
                             maxLength={4}
                           />
@@ -749,13 +750,25 @@ const LogList: React.FC<LogListProps> = ({
                             placeholder="Nome Completo"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
-                            className="col-span-2 w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold"
+                            className="col-span-3 bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold"
                             required
                           />
                         </div>
                       </div>
 
+                      {/* Cargo + Setor */}
                       <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Cargo</label>
+                          <input
+                            type="text"
+                            placeholder="ex: Gerente"
+                            value={newRole}
+                            onChange={(e) => setNewRole(e.target.value)}
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold"
+                            required
+                          />
+                        </div>
                         <div>
                           <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Setor</label>
                           <input
@@ -763,10 +776,14 @@ const LogList: React.FC<LogListProps> = ({
                             placeholder="ex: Vendas"
                             value={newDepartment}
                             onChange={(e) => setNewDepartment(e.target.value)}
-                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold text-sm"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold"
                             required
                           />
                         </div>
+                      </div>
+
+                      {/* CPF + Contrato (Data) */}
+                      <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">CPF</label>
                           <input
@@ -777,8 +794,18 @@ const LogList: React.FC<LogListProps> = ({
                             className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold text-sm"
                           />
                         </div>
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Contratação</label>
+                          <input
+                            type="date"
+                            value={newHireDate}
+                            onChange={(e) => setNewHireDate(e.target.value)}
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-slate-400 outline-none focus:border-indigo-500 transition-all font-bold text-xs uppercase"
+                          />
+                        </div>
                       </div>
 
+                      {/* Contato: Email + Telefone */}
                       <div>
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Contato</label>
                         <div className="grid grid-cols-2 gap-3">
@@ -799,30 +826,36 @@ const LogList: React.FC<LogListProps> = ({
                         </div>
                       </div>
 
+                      {/* Status + Carga Horária */}
                       <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Contratação</label>
-                          <input
-                            type="date"
-                            value={newHireDate}
-                            onChange={(e) => setNewHireDate(e.target.value)}
-                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-slate-400 outline-none focus:border-indigo-500 transition-all font-bold text-xs uppercase"
-                          />
-                        </div>
                         <div>
                           <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Status Inicial</label>
                           <select
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value as any)}
-                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white outline-none focus:border-indigo-500 transition-all text-[10px] font-black uppercase tracking-widest appearance-none cursor-pointer"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white outline-none focus:border-indigo-500 transition-all text-xs font-bold uppercase tracking-widest appearance-none cursor-pointer"
                           >
                             <option value="active" className="bg-slate-900">Ativo</option>
                             <option value="inactive" className="bg-slate-900">Inativo</option>
                             <option value="on_vacation" className="bg-slate-900">Férias</option>
                           </select>
                         </div>
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Carga Horária Diária</label>
+                          <div className="flex items-center gap-2 bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 group/h">
+                            <input
+                              type="number"
+                              value={newDailyHours}
+                              onChange={(e) => setNewDailyHours(e.target.value)}
+                              className="w-full bg-transparent text-white font-black outline-none focus:text-indigo-400 transition-colors text-right"
+                              placeholder="8"
+                            />
+                            <span className="text-[10px] text-slate-700 font-black group-focus-within/h:text-indigo-500/50 transition-colors">HRS</span>
+                          </div>
+                        </div>
                       </div>
 
+                      {/* Financeiro */}
                       <div className="pt-2">
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
                         <div className="bg-slate-950/40 border border-white/5 p-5 rounded-3xl space-y-4">
