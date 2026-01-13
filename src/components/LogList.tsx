@@ -153,6 +153,7 @@ const LogList: React.FC<LogListProps> = ({
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [filterVerified, setFilterVerified] = useState<'all' | 'verified' | 'unverified'>('all');
+  const [viewMode, setViewMode] = useState<'detailed' | 'summary'>('detailed');
 
   // -- FEEDBACK STATE --
   const [filterFeedback, setFilterFeedback] = useState<string | null>(null);
@@ -180,6 +181,18 @@ const LogList: React.FC<LogListProps> = ({
   const [newHourlyRate, setNewHourlyRate] = useState('');
   const [newOvertimeRate, setNewOvertimeRate] = useState('');
   const [newDailyHours, setNewDailyHours] = useState('8');
+  const [newSalary, setNewSalary] = useState('');
+
+  // -- AUTOMATION EFFECT: Financial Calculations --
+  useEffect(() => {
+    const salary = parseFloat(newSalary);
+    if (!isNaN(salary) && salary > 0) {
+      // Logic for 220h standard work month (Brazilian CLT)
+      const hRate = salary / 220;
+      setNewHourlyRate(hRate.toFixed(2));
+      setNewOvertimeRate((hRate * 1.5).toFixed(2)); // Standard 50%
+    }
+  }, [newSalary]);
 
   // -- EDIT EMPLOYEE STATE --
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
@@ -277,6 +290,60 @@ const LogList: React.FC<LogListProps> = ({
     }).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }, [logs, searchTerm, startDate, endDate, filterVerified]);
 
+  // -- CALCULATED SUMMARIES (OVERTIME LOGIC) --
+  const dailySummaries = useMemo(() => {
+    const summaryMap: Record<string, {
+      totalHours: number,
+      regularHours: number,
+      extraHours: number,
+      logs: TimeLog[]
+    }> = {};
+
+    // Group logs by employee and day
+    filteredLogs.forEach(log => {
+      const dayKey = `${log.employeeId}_${log.timestamp.toLocaleDateString('pt-BR')}`;
+      if (!summaryMap[dayKey]) {
+        summaryMap[dayKey] = { totalHours: 0, regularHours: 0, extraHours: 0, logs: [] };
+      }
+      summaryMap[dayKey].logs.push(log);
+    });
+
+    // Calculate totals for each group
+    Object.keys(summaryMap).forEach(key => {
+      const summary = summaryMap[key];
+      const sortedLogs = [...summary.logs].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      const employeeId = sortedLogs[0].employeeId;
+      const employee = employees.find(e => e.id === employeeId);
+      const contractHours = employee?.dailyHours || 8;
+
+      let totalMs = 0;
+      let lastIn: Date | null = null;
+
+      sortedLogs.forEach(log => {
+        if (log.type === 'IN') {
+          lastIn = log.timestamp;
+        } else if (log.type === 'OUT' && lastIn) {
+          totalMs += log.timestamp.getTime() - lastIn.getTime();
+          lastIn = null;
+        }
+      });
+
+      const totalH = totalMs / (1000 * 60 * 60);
+      const isWeekend = sortedLogs[0].timestamp.getDay() === 0 || sortedLogs[0].timestamp.getDay() === 6;
+
+      if (isWeekend) {
+        summary.extraHours = totalH;
+        summary.regularHours = 0;
+      } else {
+        summary.regularHours = Math.min(totalH, contractHours);
+        summary.extraHours = Math.max(0, totalH - contractHours);
+      }
+      summary.totalHours = totalH;
+    });
+
+    return summaryMap;
+  }, [filteredLogs, employees]);
+
   const handlePrintFilteredLogs = () => {
     if (filteredLogs.length === 0) {
       setNotification({ message: "Não há registros para imprimir.", type: 'info' });
@@ -318,7 +385,8 @@ const LogList: React.FC<LogListProps> = ({
       status: newStatus,
       hourlyRate: parseFloat(newHourlyRate),
       overtimeRate: parseFloat(newOvertimeRate),
-      dailyHours: parseFloat(newDailyHours)
+      dailyHours: parseFloat(newDailyHours),
+      baseSalary: parseFloat(newSalary) || 0
     };
 
     onAddEmployee(newEmp);
@@ -335,6 +403,7 @@ const LogList: React.FC<LogListProps> = ({
     setNewHourlyRate('');
     setNewOvertimeRate('');
     setNewDailyHours('8');
+    setNewSalary('');
 
     setSuccessScreenData({
       title: "Registro Concluído",
@@ -449,7 +518,7 @@ const LogList: React.FC<LogListProps> = ({
               <h1 className="text-2xl font-extrabold text-white tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">Portal de Gestão RH</h1>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest uppercase">Sistema de Ponto Inteligente</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest uppercase">Sistema de Ponto Inteligente</p>
               </div>
             </div>
           </div>
@@ -655,6 +724,21 @@ const LogList: React.FC<LogListProps> = ({
                       <option value="verified">Apenas Verificados</option>
                       <option value="unverified">Não Verificados</option>
                     </select>
+
+                    <div className="flex bg-slate-800/80 p-1 rounded-2xl border border-white/5 shadow-inner">
+                      <button
+                        onClick={() => setViewMode('detailed')}
+                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewMode === 'detailed' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                      >
+                        Detalhes
+                      </button>
+                      <button
+                        onClick={() => setViewMode('summary')}
+                        className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${viewMode === 'summary' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                      >
+                        Resumo
+                      </button>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -688,30 +772,87 @@ const LogList: React.FC<LogListProps> = ({
                 </div>
 
                 <div className="grid gap-4">
-                  {filteredLogs.length === 0 ? (
-                    <div className="text-center py-20 px-6 glass-card-light rounded-[2.5rem] border border-white/5 border-dashed">
-                      <div className="w-16 h-16 bg-slate-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
+                  {viewMode === 'detailed' ? (
+                    filteredLogs.length === 0 ? (
+                      <div className="text-center py-20 px-6 glass-card-light rounded-[2.5rem] border border-white/5 border-dashed">
+                        <div className="w-16 h-16 bg-slate-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-600">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                          </svg>
+                        </div>
+                        <p className="text-slate-400 font-bold tracking-tight mb-1">Nenhum registro encontrado</p>
+                        <button onClick={handleClearFilters} className="mt-4 px-6 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-indigo-500/20 transition-all active:scale-95">
+                          Limpar Filtros
+                        </button>
                       </div>
-                      <p className="text-slate-400 font-bold tracking-tight mb-1">Nenhum registro encontrado</p>
-                      <p className="text-xs text-slate-600 mb-6">Tente ajustar seus filtros ou busca.</p>
-                      <button onClick={handleClearFilters} className="px-6 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-indigo-500/20 transition-all active:scale-95">
-                        Limpar Filtros
-                      </button>
-                    </div>
+                    ) : (
+                      filteredLogs.map((log) => (
+                        <LogCard
+                          key={log.id}
+                          log={log}
+                          onDelete={(type, id) => {
+                            setDeleteTarget({ type, id });
+                            setPasswordInput('');
+                          }}
+                        />
+                      ))
+                    )
                   ) : (
-                    filteredLogs.map((log) => (
-                      <LogCard
-                        key={log.id}
-                        log={log}
-                        onDelete={(type, id) => {
-                          setDeleteTarget({ type, id });
-                          setPasswordInput('');
-                        }}
-                      />
-                    ))
+                    <div className="grid grid-cols-1 gap-6 animate-fade-in">
+                      {Object.keys(dailySummaries).sort((a, b) => b.localeCompare(a)).map(key => {
+                        const summary = dailySummaries[key];
+                        const [empId, dateStr] = key.split('_');
+                        const employee = employees.find(e => e.id === empId);
+
+                        return (
+                          <div key={key} className="glass-card-light p-6 rounded-[2.5rem] border border-white/5 hover:border-indigo-500/30 transition-all group">
+                            <div className="flex flex-col sm:flex-row justify-between gap-5 items-start sm:items-center mb-6">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-slate-950 rounded-xl flex items-center justify-center border border-white/10 group-hover:border-indigo-500/50 transition-colors">
+                                  <span className="text-indigo-400 font-black text-lg">{employee?.name.charAt(0) || '?'}</span>
+                                </div>
+                                <div>
+                                  <h4 className="text-white font-extrabold tracking-tight">{employee?.name || 'Desconhecido'}</h4>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{dateStr}</span>
+                                    <span className="w-1 h-1 bg-slate-800 rounded-full"></span>
+                                    <span className="text-[10px] text-indigo-400 font-mono font-bold">PIN: {empId}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 bg-slate-950/50 p-2 rounded-2xl border border-white/5 overflow-x-auto max-w-full">
+                                {summary.logs.map((l, i) => (
+                                  <div key={l.id} className={`flex-shrink-0 w-10 h-10 rounded-lg border border-white/10 flex flex-col items-center justify-center text-[7px] font-black ${l.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`} title={`${l.type === 'IN' ? 'Entrada' : 'Saída'}: ${l.timestamp.toLocaleTimeString()}`}>
+                                    <span className="opacity-50">{l.type}</span>
+                                    <span>{l.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-3">
+                              <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                                <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest block mb-1">Total Dia</span>
+                                <span className="text-xl text-white font-black">{summary.totalHours.toFixed(2)}<small className="text-[10px] ml-1 text-slate-500 font-normal">h</small></span>
+                              </div>
+                              <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
+                                <span className="text-[8px] text-emerald-600 font-black uppercase tracking-widest block mb-1">Horas Normais</span>
+                                <span className="text-xl text-emerald-400 font-black">{summary.regularHours.toFixed(2)}<small className="text-[10px] ml-1 text-emerald-500/50 font-normal">h</small></span>
+                              </div>
+                              <div className="p-4 bg-amber-500/5 rounded-2xl border border-amber-500/20">
+                                <span className="text-[8px] text-amber-600 font-black uppercase tracking-widest block mb-1">Horas Extras</span>
+                                <span className="text-xl text-amber-400 font-black">{summary.extraHours.toFixed(2)}<small className="text-[10px] ml-1 text-amber-500/50 font-normal">h</small></span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {Object.keys(dailySummaries).length === 0 && (
+                        <div className="text-center py-20 bg-slate-950/20 rounded-[3rem] border border-dashed border-white/5">
+                          <p className="text-slate-600 font-extrabold uppercase tracking-widest text-sm">Nenhum resumo disponível</p>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -859,6 +1000,19 @@ const LogList: React.FC<LogListProps> = ({
                       <div className="pt-2">
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
                         <div className="bg-slate-950/40 border border-white/5 p-5 rounded-3xl space-y-4">
+                          <div className="flex justify-between items-center group/item pb-2 border-b border-white/5">
+                            <span className="text-xs text-indigo-400 font-black uppercase tracking-widest">Salário Base</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-700 font-black">BRL</span>
+                              <input
+                                type="number"
+                                value={newSalary}
+                                onChange={(e) => setNewSalary(e.target.value)}
+                                className="w-24 bg-transparent text-right text-white font-black outline-none focus:text-indigo-400 transition-colors"
+                                placeholder="0,00"
+                              />
+                            </div>
+                          </div>
                           <div className="flex justify-between items-center group/item">
                             <span className="text-xs text-slate-500 font-bold group-hover/item:text-slate-300 transition-colors">Taxa Regular</span>
                             <div className="flex items-center gap-2">
@@ -866,11 +1020,8 @@ const LogList: React.FC<LogListProps> = ({
                               <input
                                 type="number"
                                 value={newHourlyRate}
-                                onChange={(e) => setNewHourlyRate(e.target.value)}
-                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-indigo-400 transition-colors"
-                                placeholder="0,00"
-                                step="0.01"
-                                required
+                                className="w-20 bg-transparent text-right text-slate-400 font-black outline-none"
+                                readOnly
                               />
                             </div>
                           </div>
@@ -881,11 +1032,8 @@ const LogList: React.FC<LogListProps> = ({
                               <input
                                 type="number"
                                 value={newOvertimeRate}
-                                onChange={(e) => setNewOvertimeRate(e.target.value)}
-                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-purple-400 transition-colors"
-                                placeholder="0,00"
-                                step="0.01"
-                                required
+                                className="w-20 bg-transparent text-right text-slate-400 font-black outline-none"
+                                readOnly
                               />
                             </div>
                           </div>
@@ -1006,6 +1154,28 @@ const LogList: React.FC<LogListProps> = ({
                       <div className="pt-2">
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
                         <div className="bg-slate-950/40 border border-white/5 p-5 rounded-[2rem] space-y-4">
+                          <div className="flex justify-between items-center group/item pb-2 border-b border-white/5">
+                            <span className="text-xs text-indigo-400 font-black uppercase tracking-widest">Salário Base</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-700 font-black">BRL</span>
+                              <input
+                                type="number"
+                                value={editingEmployee.baseSalary || 0}
+                                onChange={(e) => {
+                                  const salary = parseFloat(e.target.value) || 0;
+                                  const hRate = salary / 220;
+                                  setEditingEmployee({
+                                    ...editingEmployee,
+                                    baseSalary: salary,
+                                    hourlyRate: parseFloat(hRate.toFixed(2)),
+                                    overtimeRate: parseFloat((hRate * 1.5).toFixed(2))
+                                  });
+                                }}
+                                className="w-24 bg-transparent text-right text-white font-black outline-none focus:text-indigo-400 transition-colors"
+                                placeholder="0,00"
+                              />
+                            </div>
+                          </div>
                           <div className="flex justify-between items-center group/item">
                             <span className="text-xs text-slate-500 font-bold group-hover/item:text-slate-300 transition-colors">Taxa Regular</span>
                             <div className="flex items-center gap-2">
@@ -1013,9 +1183,8 @@ const LogList: React.FC<LogListProps> = ({
                               <input
                                 type="number"
                                 value={editingEmployee.hourlyRate || 0}
-                                onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
-                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-indigo-400 transition-colors"
-                                step="0.01"
+                                className="w-20 bg-transparent text-right text-slate-400 font-black outline-none"
+                                readOnly
                               />
                             </div>
                           </div>
@@ -1025,10 +1194,9 @@ const LogList: React.FC<LogListProps> = ({
                               <span className="text-[10px] text-slate-700 font-black">BRL</span>
                               <input
                                 type="number"
-                                value={editingEmployee.overtimeRate}
-                                onChange={(e) => setEditingEmployee({ ...editingEmployee, overtimeRate: parseFloat(e.target.value) })}
-                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-purple-400 transition-colors"
-                                step="0.01"
+                                value={editingEmployee.overtimeRate || 0}
+                                className="w-20 bg-transparent text-right text-slate-400 font-black outline-none"
+                                readOnly
                               />
                             </div>
                           </div>
@@ -1348,17 +1516,19 @@ const LogList: React.FC<LogListProps> = ({
         )}
       </div>
 
-      {notification && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-bounce-short">
-          <div className={`px-6 py-4 rounded-3xl shadow-2xl border backdrop-blur-xl flex items-center gap-3 ${notification.type === 'success' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' :
-            notification.type === 'error' ? 'bg-rose-500/20 border-rose-500/50 text-rose-400' :
-              'bg-indigo-500/20 border-indigo-500/50 text-indigo-400'
-            }`}>
-            <div className={`w-2 h-2 rounded-full animate-pulse ${notification.type === 'success' ? 'bg-emerald-400' : notification.type === 'error' ? 'bg-rose-400' : 'bg-indigo-400'}`} />
-            <span className="text-xs font-black uppercase tracking-widest">{notification.message}</span>
+      {
+        notification && (
+          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-bounce-short">
+            <div className={`px-6 py-4 rounded-3xl shadow-2xl border backdrop-blur-xl flex items-center gap-3 ${notification.type === 'success' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' :
+              notification.type === 'error' ? 'bg-rose-500/20 border-rose-500/50 text-rose-400' :
+                'bg-indigo-500/20 border-indigo-500/50 text-indigo-400'
+              }`}>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${notification.type === 'success' ? 'bg-emerald-400' : notification.type === 'error' ? 'bg-rose-400' : 'bg-indigo-400'}`} />
+              <span className="text-xs font-black uppercase tracking-widest">{notification.message}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 };

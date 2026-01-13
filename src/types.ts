@@ -12,6 +12,7 @@ export interface Employee {
   hourlyRate: number;
   overtimeRate: number;
   dailyHours: number;
+  baseSalary?: number;
 }
 
 export interface TimeLog {
