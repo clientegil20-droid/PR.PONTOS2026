@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Employee, TimeLog } from '../types';
 import { COMPANY_NAME } from '../constants';
 
@@ -39,6 +39,14 @@ const LogList: React.FC<LogListProps> = ({
   const isFirstRender = useRef(true);
 
   // -- FORM STATES --
+  // -- DATE HELPERS --
+  const getLocalDateString = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [newName, setNewName] = useState('');
   const [newId, setNewId] = useState('');
   const [newRole, setNewRole] = useState('');
@@ -46,7 +54,7 @@ const LogList: React.FC<LogListProps> = ({
   const [newEmail, setNewEmail] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newCpf, setNewCpf] = useState('');
-  const [newHireDate, setNewHireDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newHireDate, setNewHireDate] = useState(getLocalDateString(new Date()));
   const [newStatus, setNewStatus] = useState<'active' | 'inactive' | 'on_vacation'>('active');
   const [newHourlyRate, setNewHourlyRate] = useState('');
   const [newOvertimeRate, setNewOvertimeRate] = useState('');
@@ -111,7 +119,7 @@ const LogList: React.FC<LogListProps> = ({
 
   const downloadCSV = () => {
     const headers = "ID Log,Nome,ID Funcionario,Data,Hora,Tipo,Verificado\n";
-    const filtered = getFilteredLogs();
+    const filtered = filteredLogs;
     const rows = filtered.map(log => {
       const date = log.timestamp.toLocaleDateString();
       const time = log.timestamp.toLocaleTimeString();
@@ -128,26 +136,9 @@ const LogList: React.FC<LogListProps> = ({
     document.body.removeChild(link);
   };
 
-  const handlePrintFilteredLogs = () => {
-    const filtered = getFilteredLogs();
-    if (filtered.length === 0) {
-      alert("Não há registros visíveis para imprimir.");
-      return;
-    }
-
-    const dateRangeStr = startDate || endDate ? `Periodo: ${startDate || 'Inicio'} a ${endDate || 'Hoje'}` : 'Todo o Período';
-
-    // Set data and trigger the useEffect print
-    setPrintData({
-      title: "Relatório de Registros de Ponto",
-      subtitle: `${dateRangeStr} | Status: ${filterVerified === 'all' ? 'Todos' : filterVerified}`,
-      logs: filtered
-    });
-  };
-
-  const getFilteredLogs = () => {
+  const filteredLogs = useMemo(() => {
     return logs.filter(log => {
-      const logDateStr = log.timestamp.toISOString().slice(0, 10); // YYYY-MM-DD
+      const logDateStr = getLocalDateString(log.timestamp);
 
       // 1. Search Term
       const matchesSearch = log.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,12 +149,27 @@ const LogList: React.FC<LogListProps> = ({
       const matchesEnd = endDate ? logDateStr <= endDate : true;
 
       // 3. Verification Status
-      let matchesVerified = true;
-      if (filterVerified === 'verified') matchesVerified = log.isVerified;
-      if (filterVerified === 'unverified') matchesVerified = !log.isVerified;
+      const matchesVerified = filterVerified === 'all' ? true :
+        filterVerified === 'verified' ? log.isVerified : !log.isVerified;
 
       return matchesSearch && matchesStart && matchesEnd && matchesVerified;
     }).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }, [logs, searchTerm, startDate, endDate, filterVerified]);
+
+  const handlePrintFilteredLogs = () => {
+    if (filteredLogs.length === 0) {
+      alert("Não há registros visíveis para imprimir.");
+      return;
+    }
+
+    const dateRangeStr = startDate || endDate ? `Periodo: ${startDate || 'Inicio'} a ${endDate || 'Hoje'}` : 'Todo o Período';
+
+    // Set data and trigger the useEffect print
+    setPrintData({
+      title: "Relatório de Registros de Ponto",
+      subtitle: `${dateRangeStr} | Status: ${filterVerified === 'all' ? 'Todos' : filterVerified}`,
+      logs: filteredLogs
+    });
   };
 
   const handleRegisterEmployee = (e: React.FormEvent) => {
@@ -203,7 +209,7 @@ const LogList: React.FC<LogListProps> = ({
     setNewEmail('');
     setNewPhone('');
     setNewCpf('');
-    setNewHireDate(new Date().toISOString().split('T')[0]);
+    setNewHireDate(getLocalDateString(new Date()));
     setNewStatus('active');
     setNewHourlyRate('');
     setNewOvertimeRate('');
@@ -231,11 +237,17 @@ const LogList: React.FC<LogListProps> = ({
   const confirmDelete = () => {
     if (passwordInput === adminPin) {
       if (deleteTarget) {
-        if (deleteTarget.type === 'log') onDeleteLog(deleteTarget.id);
-        else if (deleteTarget.type === 'employee') onDeleteEmployee(deleteTarget.id);
+        const target = { ...deleteTarget }; // Store target briefly
 
+        // Immediate UI feedback: Close modal and clear input first
         setDeleteTarget(null);
         setPasswordInput('');
+
+        // Defer heavy task (and potential sync alert blocks) to the next tick
+        setTimeout(() => {
+          if (target.type === 'log') onDeleteLog(target.id);
+          else if (target.type === 'employee') onDeleteEmployee(target.id);
+        }, 0);
       }
     } else {
       alert("Senha incorreta!");
@@ -262,50 +274,34 @@ const LogList: React.FC<LogListProps> = ({
   };
 
   // --- PAYROLL CALC (Overtime Only) ---
-  const getEmployeeStats = (employeeId: string, hourlyRate: number, overtimeRate: number, dailyHoursLimit: number) => {
-    const userLogs = logs.filter(l => l.employeeId === employeeId).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-    let regularHours = 0;
-    let overtimeHours = 0;
-    const limitHours = dailyHoursLimit || 8;
-    const WORK_DAY_LIMIT_MS = limitHours * 60 * 60 * 1000;
-
-    for (let i = 0; i < userLogs.length; i++) {
-      if (userLogs[i].type === 'IN') {
-        if (i + 1 < userLogs.length && userLogs[i + 1].type === 'OUT') {
-          const duration = userLogs[i + 1].timestamp.getTime() - userLogs[i].timestamp.getTime();
-          if (duration > WORK_DAY_LIMIT_MS) {
-            regularHours += (WORK_DAY_LIMIT_MS / (1000 * 60 * 60));
-            overtimeHours += ((duration - WORK_DAY_LIMIT_MS) / (1000 * 60 * 60));
-          } else {
-            regularHours += (duration / (1000 * 60 * 60));
-          }
-          i++;
-        }
-      }
-    }
-    const totalPayValue = (regularHours * hourlyRate) + (overtimeHours * overtimeRate);
-    return {
-      totalHours: (regularHours + overtimeHours).toFixed(2),
-      regularHours: regularHours.toFixed(2),
-      overtimeHours: overtimeHours.toFixed(2),
-      pay: totalPayValue.toFixed(2)
-    };
-  };
 
   // --- DASHBOARD DATA ---
-  const getLast7DaysActivity = () => {
+  const activityData = useMemo(() => {
     const days = [];
+    const now = new Date();
+
+    // Create map for O(1) daily lookup
+    const countsByDay: Record<string, number> = {};
+
+    // Single pass over logs to count by day O(N)
+    logs.forEach((log: TimeLog) => {
+      const dayStr = getLocalDateString(log.timestamp);
+      countsByDay[dayStr] = (countsByDay[dayStr] || 0) + 1;
+    });
+
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dayStr = d.toISOString().slice(0, 10);
-      const count = logs.filter(l => l.timestamp.toISOString().slice(0, 10) === dayStr).length;
-      days.push({ day: d.toLocaleDateString('pt-BR', { weekday: 'short' }), count });
+      const d = new Date(now);
+      d.setDate(now.getDate() - i);
+      const dayStr = getLocalDateString(d);
+      days.push({
+        day: d.toLocaleDateString('pt-BR', { weekday: 'short' }),
+        count: countsByDay[dayStr] || 0
+      });
     }
     return days;
-  };
-  const activityData = getLast7DaysActivity();
-  const maxActivity = Math.max(...activityData.map(d => d.count), 1);
+  }, [logs]);
+
+  const maxActivity = useMemo(() => Math.max(...activityData.map(d => d.count), 1), [activityData]);
 
   return (
     <>
@@ -372,7 +368,7 @@ const LogList: React.FC<LogListProps> = ({
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25a2.25 2.25 0 01-2.25 2.25h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
             </svg>
             Visão Geral
             {activeTab === 'dashboard' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full shadow-[0_-4px_10px_rgba(99,102,241,0.5)]"></div>}
@@ -412,7 +408,7 @@ const LogList: React.FC<LogListProps> = ({
             {/* -- DASHBOARD -- */}
             {activeTab === 'dashboard' && (
               <div className="space-y-8 animate-slide-up">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Total Employees */}
                   <div className="glass-card p-6 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-500">
                     <div className="absolute -right-6 -top-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl group-hover:bg-indigo-500/20 transition-all duration-700"></div>
@@ -498,101 +494,78 @@ const LogList: React.FC<LogListProps> = ({
             {activeTab === 'logs' && (
               <div className="space-y-4">
                 {/* Tools Bar - Refined Glass Style */}
-                <div className="glass-card-light p-5 rounded-[2rem] border border-white/5 flex flex-col xl:flex-row gap-5 justify-between items-start xl:items-center">
-
-                  {/* Filter Groups */}
-                  <div className="flex flex-col md:flex-row gap-4 w-full xl:w-auto">
-
-                    {/* Search */}
-                    <div className="relative flex-1 md:flex-none md:w-72 group">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 absolute left-4 top-3 text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+                <div className="glass-card-light p-4 rounded-3xl border border-white/5 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-4 flex-1">
+                    <div className="relative flex-1 min-w-[200px]">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                       </svg>
                       <input
                         type="text"
-                        placeholder="Buscar por nome ou PIN..."
+                        placeholder="Buscar por nome ou ID..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-950/40 border border-white/5 text-white rounded-2xl pl-12 pr-4 py-3 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600 font-medium"
+                        className="w-full bg-slate-900/50 border border-white/5 rounded-2xl pl-11 pr-4 py-2.5 text-sm text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600 font-medium"
                       />
                     </div>
-
-                    {/* Date Range */}
-                    <div className="flex gap-2 flex-1 md:flex-none">
-                      <div className="relative flex-1">
-                        <input
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          className="w-full bg-slate-950/40 border border-white/5 text-slate-300 rounded-2xl px-5 py-3 focus:border-indigo-500/50 outline-none text-xs font-bold uppercase tracking-widest transition-all"
-                        />
-                      </div>
-                      <span className="self-center text-slate-600 font-black">/</span>
-                      <div className="relative flex-1">
-                        <input
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          className="w-full bg-slate-950/40 border border-white/5 text-slate-300 rounded-2xl px-5 py-3 focus:border-indigo-500/50 outline-none text-xs font-bold uppercase tracking-widest transition-all"
-                        />
-                      </div>
+                    <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-white/5">
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="bg-transparent text-xs text-white outline-none px-2 py-1 cursor-pointer font-bold"
+                      />
+                      <span className="text-slate-600 text-[10px] font-black">ATÉ</span>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="bg-transparent text-xs text-white outline-none px-2 py-1 cursor-pointer font-bold"
+                      />
                     </div>
-
-                    {/* Verified Status */}
-                    <div className="flex-1 md:flex-none relative">
-                      <select
-                        value={filterVerified}
-                        onChange={(e) => setFilterVerified(e.target.value as any)}
-                        className="w-full md:w-48 bg-slate-950/40 border border-white/5 text-white rounded-2xl px-5 py-3 focus:border-indigo-500/50 outline-none text-xs font-bold transition-all appearance-none cursor-pointer"
-                      >
-                        <option value="all" className="bg-slate-900">Todos os Status</option>
-                        <option value="verified" className="bg-slate-900">✓ Verificados</option>
-                        <option value="unverified" className="bg-slate-900">⚠ Não Verificados</option>
-                      </select>
-                      <div className="absolute right-4 top-4 pointer-events-none text-slate-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                          <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    </div>
-
+                    <select
+                      value={filterVerified}
+                      onChange={(e) => setFilterVerified(e.target.value as any)}
+                      className="bg-slate-900/50 border border-white/5 rounded-2xl px-4 py-2.5 text-xs text-white outline-none focus:border-indigo-500 transition-all font-bold cursor-pointer"
+                    >
+                      <option value="all">Todos os Status</option>
+                      <option value="verified">Apenas Verificados</option>
+                      <option value="unverified">Não Verificados</option>
+                    </select>
                   </div>
-
-                  {/* Buttons & Feedback */}
-                  <div className="flex items-center gap-3 w-full xl:w-auto justify-end">
-
-                    {filterFeedback && (
-                      <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-xl animate-fade-in border border-emerald-500/20 whitespace-nowrap">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                        {filterFeedback}
-                      </div>
-                    )}
-
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleClearFilters}
+                      className="p-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                      title="Limpar Filtros"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                    </button>
                     <button
                       onClick={downloadCSV}
-                      className="flex-1 xl:flex-none bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 border border-white/5"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-emerald-400">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                      </svg>
-                      CSV
-                    </button>
-
-                    <button
-                      onClick={handlePrintFilteredLogs}
-                      className="flex-1 xl:flex-none bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-indigo-900/20 transition-all active:scale-95"
+                      className="flex items-center gap-2 py-2.5 px-4 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white rounded-2xl transition-all border border-emerald-500/20 font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-xl shadow-emerald-950/20"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008h-.008V10.5zm-3 0h.008v.008h-.008V10.5z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                       </svg>
-                      Relatório
+                      Planilha
+                    </button>
+                    <button
+                      onClick={handlePrintFilteredLogs}
+                      className="flex items-center gap-2 py-2.5 px-4 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-500 hover:text-white rounded-2xl transition-all border border-indigo-500/20 font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-xl shadow-indigo-950/20"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.821L2.25 12l4.47-1.821L9 6.75l1.821 4.47L15.3 13.029l-4.479 1.821L9 19.32l-2.28-5.499zM18 9.75a.75.75 0 01.75-.75h.75a.75.75 0 010 1.5h-.75a.75.75 0 01-.75-.75zM19.75 18a.75.75 0 00-.75.75v.75a.75.75 0 001.5 0v-.75a.75.75 0 00-.75-.75zM9 15.75a.75.75 0 01.75-.75h.75a.75.75 0 010 1.5h-.75a.75.75 0 01-.75-.75z" />
+                      </svg>
+                      Imprimir
                     </button>
                   </div>
                 </div>
 
-                {/* List */}
-                <div className="grid gap-3">
-                  {getFilteredLogs().length === 0 ? (
+                <div className="grid gap-4">
+                  {filteredLogs.length === 0 ? (
                     <div className="text-center py-20 px-6 glass-card-light rounded-[2.5rem] border border-white/5 border-dashed">
                       <div className="w-16 h-16 bg-slate-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
@@ -606,7 +579,7 @@ const LogList: React.FC<LogListProps> = ({
                       </button>
                     </div>
                   ) : (
-                    getFilteredLogs().map((log) => (
+                    filteredLogs.map((log) => (
                       <div key={log.id} className="group glass-card-light p-5 rounded-[2rem] border border-white/5 hover:border-indigo-500/30 transition-all flex flex-col sm:flex-row gap-6 items-center hover:shadow-2xl hover:shadow-indigo-900/10">
                         {/* Styled Image Container */}
                         <div className="relative w-16 h-16 bg-slate-950 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 shadow-inner group-hover:border-indigo-400 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
@@ -1261,7 +1234,7 @@ const LogList: React.FC<LogListProps> = ({
             }
           </div> {/* closes 410 (max-w-7xl) */}
         </div> {/* closes 409 (flex-1) */}
-      </div> {/* closes 320 (w-full h-full) */}
+      </div > {/* closes 320 (w-full h-full) */}
 
       {/* --- PRINT AREA --- */}
       <div id="print-area" className="hidden print:block">
