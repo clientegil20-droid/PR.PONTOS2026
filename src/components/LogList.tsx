@@ -493,100 +493,95 @@ const LogList: React.FC<LogListProps> = ({
             {/* -- LOGS TAB -- */}
             {activeTab === 'logs' && (
               <div className="space-y-4">
-                {/* Tools Bar */}
-                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
+                {/* Tools Bar - Refined Glass Style */}
+                <div className="glass-card-light p-5 rounded-[2rem] border border-white/5 flex flex-col xl:flex-row gap-5 justify-between items-start xl:items-center">
 
                   {/* Filter Groups */}
                   <div className="flex flex-col md:flex-row gap-4 w-full xl:w-auto">
 
                     {/* Search */}
-                    <div className="relative flex-1 md:flex-none md:w-64">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 absolute left-3 top-2.5 text-slate-500">
+                    <div className="relative flex-1 md:flex-none md:w-72 group">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 absolute left-4 top-3 text-slate-500 group-focus-within:text-indigo-400 transition-colors">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                       </svg>
                       <input
                         type="text"
-                        placeholder="Buscar nome ou ID..."
+                        placeholder="Buscar por nome ou PIN..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-600 text-white rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="w-full bg-slate-950/40 border border-white/5 text-white rounded-2xl pl-12 pr-4 py-3 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600 font-medium"
                       />
                     </div>
 
                     {/* Date Range */}
                     <div className="flex gap-2 flex-1 md:flex-none">
-                      <input
-                        type="date"
-                        title="Data Inicial"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="flex-1 md:w-36 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                      />
-                      <span className="self-center text-slate-500">-</span>
-                      <input
-                        type="date"
-                        title="Data Final"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="flex-1 md:w-36 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                      />
+                      <div className="relative flex-1">
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full bg-slate-950/40 border border-white/5 text-slate-300 rounded-2xl px-5 py-3 focus:border-indigo-500/50 outline-none text-xs font-bold uppercase tracking-widest transition-all"
+                        />
+                      </div>
+                      <span className="self-center text-slate-600 font-black">/</span>
+                      <div className="relative flex-1">
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full bg-slate-950/40 border border-white/5 text-slate-300 rounded-2xl px-5 py-3 focus:border-indigo-500/50 outline-none text-xs font-bold uppercase tracking-widest transition-all"
+                        />
+                      </div>
                     </div>
 
                     {/* Verified Status */}
-                    <div className="flex-1 md:flex-none">
+                    <div className="flex-1 md:flex-none relative">
                       <select
                         value={filterVerified}
                         onChange={(e) => setFilterVerified(e.target.value as any)}
-                        className="w-full md:w-40 bg-slate-900 border border-slate-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                        className="w-full md:w-48 bg-slate-950/40 border border-white/5 text-white rounded-2xl px-5 py-3 focus:border-indigo-500/50 outline-none text-xs font-bold transition-all appearance-none cursor-pointer"
                       >
-                        <option value="all">Todos Status</option>
-                        <option value="verified">Verificados</option>
-                        <option value="unverified">Não Verificados</option>
+                        <option value="all" className="bg-slate-900">Todos os Status</option>
+                        <option value="verified" className="bg-slate-900">✓ Verificados</option>
+                        <option value="unverified" className="bg-slate-900">⚠ Não Verificados</option>
                       </select>
+                      <div className="absolute right-4 top-4 pointer-events-none text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                          <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                        </svg>
+                      </div>
                     </div>
 
                   </div>
 
                   {/* Buttons & Feedback */}
-                  <div className="flex items-center gap-2 w-full xl:w-auto justify-end">
+                  <div className="flex items-center gap-3 w-full xl:w-auto justify-end">
 
-                    {/* Visual Feedback for Filter/Reset */}
                     {filterFeedback && (
-                      <div className="flex items-center gap-2 px-3 py-2 bg-slate-700/50 text-emerald-400 text-xs font-bold rounded-lg animate-fade-in border border-emerald-500/20 whitespace-nowrap">
-                        {filterFeedback === "Filtros Resetados" ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                        )}
+                      <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-xl animate-fade-in border border-emerald-500/20 whitespace-nowrap">
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                         {filterFeedback}
                       </div>
                     )}
 
-                    {/* Export Button */}
                     <button
                       onClick={downloadCSV}
-                      className="flex-1 xl:flex-none bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20 transition-all active:scale-95"
+                      className="flex-1 xl:flex-none bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 border border-white/5"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-emerald-400">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                       </svg>
-                      <span className="hidden sm:inline">CSV</span>
+                      CSV
                     </button>
 
-                    {/* Print Button */}
                     <button
                       onClick={handlePrintFilteredLogs}
-                      className="flex-1 xl:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20 transition-all active:scale-95"
-                      title="Imprimir Relatório Visível"
+                      className="flex-1 xl:flex-none bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-indigo-900/20 transition-all active:scale-95"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008h-.008V10.5zm-3 0h.008v.008h-.008V10.5z" />
                       </svg>
-                      <span className="hidden sm:inline">Imprimir</span>
+                      Relatório
                     </button>
                   </div>
                 </div>
@@ -594,45 +589,51 @@ const LogList: React.FC<LogListProps> = ({
                 {/* List */}
                 <div className="grid gap-3">
                   {getFilteredLogs().length === 0 ? (
-                    <div className="text-center py-12 text-slate-500 bg-slate-800/50 rounded-xl border border-slate-700 border-dashed">
-                      <p className="mb-2">Nenhum registro encontrado.</p>
-                      <button onClick={handleClearFilters} className="text-blue-400 hover:text-blue-300 text-sm underline">
+                    <div className="text-center py-20 px-6 glass-card-light rounded-[2.5rem] border border-white/5 border-dashed">
+                      <div className="w-16 h-16 bg-slate-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                      </div>
+                      <p className="text-slate-400 font-bold tracking-tight mb-1">Nenhum registro encontrado</p>
+                      <p className="text-xs text-slate-600 mb-6">Tente ajustar seus filtros ou busca.</p>
+                      <button onClick={handleClearFilters} className="px-6 py-2.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-indigo-500/20 transition-all active:scale-95">
                         Limpar Filtros
                       </button>
                     </div>
                   ) : (
                     getFilteredLogs().map((log) => (
-                      <div key={log.id} className="group bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-700 hover:border-slate-500 transition-all flex flex-col sm:flex-row gap-4 items-center">
+                      <div key={log.id} className="group glass-card-light p-5 rounded-[2rem] border border-white/5 hover:border-indigo-500/30 transition-all flex flex-col sm:flex-row gap-6 items-center hover:shadow-2xl hover:shadow-indigo-900/10">
                         {/* Styled Image Container */}
-                        <div className="relative w-14 h-14 bg-slate-900 rounded-full overflow-hidden flex-shrink-0 border-2 border-slate-600 shadow-inner group-hover:border-blue-400 group-hover:shadow-[0_0_15px_rgba(96,165,250,0.6)] transition-all duration-300">
+                        <div className="relative w-16 h-16 bg-slate-950 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10 shadow-inner group-hover:border-indigo-400 group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
                           <img
                             src={log.photoBase64}
                             alt="Check-in"
-                            className="w-full h-full object-cover brightness-75 grayscale-[20%] group-hover:brightness-100 group-hover:grayscale-0 transition-all duration-300"
+                            className="w-full h-full object-cover brightness-75 grayscale-[20%] group-hover:brightness-105 group-hover:grayscale-0 transition-all duration-500"
                           />
-                          {/* Dark overlay tint */}
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 to-transparent group-hover:opacity-0 transition-opacity duration-500"></div>
                         </div>
 
                         <div className="flex-1 min-w-0 text-center sm:text-left">
-                          <h4 className="font-bold text-slate-100 truncate">{log.employeeName}</h4>
-                          <div className="flex items-center justify-center sm:justify-start gap-2 text-xs text-slate-400 mt-1">
-                            <span className="font-mono bg-slate-700 px-1.5 rounded">{log.employeeId}</span>
-                            <span>{log.timestamp.toLocaleDateString()}</span>
-                            <span>•</span>
-                            <span>{log.timestamp.toLocaleTimeString()}</span>
+                          <h4 className="font-extrabold text-white text-lg tracking-tight truncate mb-1">{log.employeeName}</h4>
+                          <div className="flex items-center justify-center sm:justify-start gap-3 text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                            <span className="bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">{log.employeeId}</span>
+                            <span>{log.timestamp.toLocaleDateString('pt-BR')}</span>
+                            <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+                            <span className="text-slate-300">{log.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
                           {/* Status Badge */}
                           {!log.isVerified && (
-                            <span className="px-2 py-1 rounded text-[10px] font-bold bg-red-900/30 text-red-400 border border-red-900/50 uppercase tracking-wide">
-                              Não Verificado
-                            </span>
+                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[9px] font-black uppercase tracking-tighter">
+                              <span className="w-1 h-1 bg-red-500 rounded-full animate-pulse"></span>
+                              IA: Inconsistente
+                            </div>
                           )}
 
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold w-20 text-center ${log.type === 'IN' ? 'bg-emerald-900/30 text-emerald-400 border border-emerald-900/50' : 'bg-orange-900/30 text-orange-400 border border-orange-900/50'}`}>
+                          <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase w-24 text-center border ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
                             {log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}
                           </span>
                           <button
@@ -640,15 +641,17 @@ const LogList: React.FC<LogListProps> = ({
                               setDeleteTarget({ type: 'log', id: log.id });
                               setPasswordInput('');
                             }}
-                            className="p-2 bg-slate-700 hover:bg-red-900/50 text-slate-400 hover:text-red-400 rounded-lg transition-colors"
+                            className="p-3 bg-slate-900/50 hover:bg-red-500/20 text-slate-500 hover:text-red-400 rounded-2xl transition-all border border-white/5 hover:border-red-500/30 active:scale-95"
+                            title="Remover Registro"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                             </svg>
                           </button>
                         </div>
                       </div>
-                    )))}
+                    ))
+                  )}
                 </div>
               </div>
             )}
@@ -669,14 +672,14 @@ const LogList: React.FC<LogListProps> = ({
                     </h3>
                     <form onSubmit={handleRegisterEmployee} className="space-y-4">
                       <div>
-                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Identificação</label>
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Identificação</label>
                         <div className="grid grid-cols-3 gap-2">
                           <input
                             type="text"
                             placeholder="PIN"
                             value={newId}
                             onChange={(e) => setNewId(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600 font-mono text-center"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-4 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-black text-center"
                             required
                             maxLength={4}
                           />
@@ -685,108 +688,108 @@ const LogList: React.FC<LogListProps> = ({
                             placeholder="Nome Completo"
                             value={newName}
                             onChange={(e) => setNewName(e.target.value)}
-                            className="col-span-2 w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            className="col-span-2 w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold"
                             required
                           />
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Setor</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Setor</label>
                           <input
                             type="text"
                             placeholder="ex: Vendas"
                             value={newDepartment}
                             onChange={(e) => setNewDepartment(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold text-sm"
                             required
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">CPF</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">CPF</label>
                           <input
                             type="text"
                             placeholder="000.000..."
                             value={newCpf}
                             onChange={(e) => setNewCpf(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold text-sm"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Contato</label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Contato</label>
+                        <div className="grid grid-cols-2 gap-3">
                           <input
                             type="email"
                             placeholder="E-mail"
                             value={newEmail}
                             onChange={(e) => setNewEmail(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold text-sm"
                           />
                           <input
                             type="text"
                             placeholder="Telefone"
                             value={newPhone}
                             onChange={(e) => setNewPhone(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-700 font-bold text-sm"
                           />
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Contratação</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Contratação</label>
                           <input
                             type="date"
                             value={newHireDate}
                             onChange={(e) => setNewHireDate(e.target.value)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition-all font-medium text-xs"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-slate-400 outline-none focus:border-indigo-500 transition-all font-bold text-xs uppercase"
                           />
                         </div>
                         <div>
-                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Status Inicial</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Status Inicial</label>
                           <select
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value as any)}
-                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition-all text-xs font-bold"
+                            className="w-full bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 text-white outline-none focus:border-indigo-500 transition-all text-[10px] font-black uppercase tracking-widest appearance-none cursor-pointer"
                           >
-                            <option value="active">Ativo</option>
-                            <option value="inactive">Inativo</option>
-                            <option value="on_vacation">Férias</option>
+                            <option value="active" className="bg-slate-900">Ativo</option>
+                            <option value="inactive" className="bg-slate-900">Inativo</option>
+                            <option value="on_vacation" className="bg-slate-900">Férias</option>
                           </select>
                         </div>
                       </div>
 
                       <div className="pt-2">
                         <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
-                        <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl space-y-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400 font-medium">Valor Hora Regular</span>
+                        <div className="bg-slate-950/40 border border-white/5 p-5 rounded-3xl space-y-4">
+                          <div className="flex justify-between items-center group/item">
+                            <span className="text-xs text-slate-500 font-bold group-hover/item:text-slate-300 transition-colors">Taxa Regular</span>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                              <span className="text-[10px] text-slate-700 font-black">BRL</span>
                               <input
                                 type="number"
                                 value={newHourlyRate}
                                 onChange={(e) => setNewHourlyRate(e.target.value)}
-                                className="w-20 bg-transparent text-right text-indigo-400 font-black outline-none"
-                                placeholder="0.00"
+                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-indigo-400 transition-colors"
+                                placeholder="0,00"
                                 step="0.01"
                                 required
                               />
                             </div>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-slate-400 font-medium">Extra (Adicional)</span>
+                          <div className="flex justify-between items-center group/item">
+                            <span className="text-xs text-slate-500 font-bold group-hover/item:text-slate-300 transition-colors">Taxa Extra</span>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                              <span className="text-[10px] text-slate-700 font-black">BRL</span>
                               <input
                                 type="number"
                                 value={newOvertimeRate}
                                 onChange={(e) => setNewOvertimeRate(e.target.value)}
-                                className="w-20 bg-transparent text-right text-purple-400 font-black outline-none"
-                                placeholder="0.00"
+                                className="w-20 bg-transparent text-right text-white font-black outline-none focus:text-purple-400 transition-colors"
+                                placeholder="0,00"
                                 step="0.01"
                                 required
                               />
@@ -795,7 +798,7 @@ const LogList: React.FC<LogListProps> = ({
                         </div>
                       </div>
 
-                      <button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl px-4 py-4 font-black transition-all shadow-xl shadow-indigo-900/40 active:scale-95 text-sm uppercase tracking-widest mt-4">
+                      <button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl px-4 py-5 font-black transition-all shadow-2xl shadow-indigo-900/40 active:scale-95 text-[10px] uppercase tracking-[0.2em] mt-4">
                         Confirmar Cadastro
                       </button>
                     </form>

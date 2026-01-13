@@ -15,34 +15,38 @@ const WelcomeScreen: React.FC = () => {
   const msg = location.state as { title: string; subtitle: string } | null;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full bg-slate-900 text-white animate-fade-in relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black opacity-80"></div>
+    <div className="flex flex-col items-center justify-center h-full w-full bg-[#020617] text-white animate-fade-in relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-      <div className="relative z-10 p-8 text-center max-w-2xl flex flex-col items-center">
-        <div className="mb-8 flex justify-center">
-          <div className="p-6 bg-blue-600 rounded-full shadow-lg shadow-blue-500/30">
+      <div className="relative z-10 p-8 text-center max-w-2xl flex flex-col items-center animate-scale-in">
+        <div className="mb-10 flex justify-center">
+          <div className={`p-8 rounded-[2.5rem] shadow-2xl relative group ${msg ? 'bg-emerald-500/20 ring-4 ring-emerald-500/20' : 'bg-indigo-500/20 ring-4 ring-indigo-500/20'}`}>
+            <div className="absolute inset-0 bg-white/5 rounded-[2.5rem] blur-xl group-hover:blur-2xl transition-all"></div>
             {msg ? (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12 text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-16 h-16 text-emerald-400 relative z-10 animate-bounce-short">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-12 h-12 text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-16 h-16 text-indigo-400 relative z-10">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
               </svg>
             )}
           </div>
         </div>
 
-        <h1 className="text-4xl font-bold mb-6 tracking-tight">{COMPANY_NAME}</h1>
+        <h1 className="text-5xl font-black mb-4 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-400">{COMPANY_NAME}</h1>
+        <div className="h-1 w-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-8"></div>
 
         {msg ? (
-          <div className="mb-12 animate-fade-in">
-            <h2 className="text-3xl font-semibold text-emerald-400 mb-3">{msg.title}</h2>
-            <p className="text-xl text-slate-300">{msg.subtitle}</p>
+          <div className="mb-12 space-y-3">
+            <h2 className="text-3xl font-extrabold text-emerald-400 tracking-tight">{msg.title}</h2>
+            <p className="text-lg text-slate-400 font-medium">{msg.subtitle}</p>
           </div>
         ) : (
           <div className="mb-12">
-            <p className="text-xl text-slate-400">Sistema administrativo encerrado.</p>
+            <p className="text-lg text-slate-400 font-medium">Sessão administrativa finalizada com segurança.</p>
           </div>
         )}
 
@@ -51,9 +55,10 @@ const WelcomeScreen: React.FC = () => {
             playSound('click');
             navigate('/');
           }}
-          className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-500 transition-all shadow-xl shadow-blue-900/40 active:scale-95 flex items-center gap-3 ring-2 ring-blue-500/30"
+          className="group relative px-12 py-5 bg-white text-slate-950 rounded-[2rem] font-black text-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-4 overflow-hidden"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6 group-hover:-translate-x-1 transition-transform">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
           </svg>
           Voltar ao Início
@@ -504,9 +509,22 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full w-full bg-slate-900 flex flex-col items-center justify-center text-white">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-xl font-medium animate-pulse">Sincronizando com Supabase...</p>
+      <div className="h-full w-full bg-[#020617] flex flex-col items-center justify-center text-white relative overflow-hidden">
+        <div className="absolute w-[500px] h-[500px] bg-indigo-600/5 blur-[120px] rounded-full animate-pulse"></div>
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="w-16 h-16 relative mb-8">
+            <div className="absolute inset-0 border-4 border-indigo-500/20 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <p className="text-xl font-black tracking-widest uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500 animate-pulse">
+            Sincronizando Sistema
+          </p>
+          <div className="mt-4 flex gap-1">
+            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+          </div>
+        </div>
       </div>
     );
   }
