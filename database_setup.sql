@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS public.employees (
     hourly_rate NUMERIC,
     overtime_rate NUMERIC,
     daily_hours NUMERIC,
-    avatar_url TEXT
+    avatar_url TEXT,
+    base_salary NUMERIC DEFAULT 0
 );
 
 -- 2. Create Time Logs Table
@@ -57,3 +58,6 @@ CREATE POLICY "Enable insert for all users" ON public.time_logs
 
 CREATE POLICY "Enable delete for all users" ON public.time_logs
     FOR DELETE USING (true);
+
+-- 5. Migration Script (Run this if the table already exists)
+-- ALTER TABLE public.employees ADD COLUMN IF NOT EXISTS base_salary NUMERIC DEFAULT 0;
