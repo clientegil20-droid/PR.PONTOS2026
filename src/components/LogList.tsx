@@ -827,8 +827,8 @@ const LogList: React.FC<LogListProps> = ({
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-black text-white text-lg tracking-tight truncate max-w-[150px]">{emp.name}</h4>
                             <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                                emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                                  'bg-slate-700/50 text-slate-400 border border-slate-600/30'
+                              emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                                'bg-slate-700/50 text-slate-400 border border-slate-600/30'
                               }`}>
                               {emp.status === 'active' ? 'Ativo' : emp.status === 'on_vacation' ? 'Férias' : 'Inativo'}
                             </span>
@@ -878,58 +878,70 @@ const LogList: React.FC<LogListProps> = ({
             {/* MODAL: EDIT EMPLOYEE */}
             {
               editingEmployee && (
-                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-md">
-                    <h3 className="text-xl font-bold text-white mb-4">Editar Funcionário</h3>
+                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                  <div className="glass-card p-8 rounded-[2.5rem] border border-white/10 shadow-2xl w-full max-w-md animate-slide-up relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+
+                    <h3 className="text-xl font-extrabold text-white mb-6 flex items-center gap-2">
+                      <span className="p-1.5 bg-indigo-500 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                      </span>
+                      Editar Colaborador
+                    </h3>
+
                     <form onSubmit={handleEditSubmit} className="space-y-4">
                       <div>
-                        <label className="text-xs text-slate-500 uppercase font-bold">Nome</label>
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Nome Completo</label>
                         <input
                           type="text"
                           value={editingEmployee.name}
                           onChange={(e) => setEditingEmployee({ ...editingEmployee, name: e.target.value })}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
                           required
                         />
                       </div>
+
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">Cargo</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Cargo</label>
                           <input
                             type="text"
                             value={editingEmployee.role}
                             onChange={(e) => setEditingEmployee({ ...editingEmployee, role: e.target.value })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                             required
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">Departamento</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Setor</label>
                           <input
                             type="text"
                             value={editingEmployee.department}
                             onChange={(e) => setEditingEmployee({ ...editingEmployee, department: e.target.value })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                             required
                           />
                         </div>
                       </div>
+
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">CPF</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">CPF</label>
                           <input
                             type="text"
                             value={editingEmployee.cpf || ''}
                             onChange={(e) => setEditingEmployee({ ...editingEmployee, cpf: e.target.value })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">Status</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Status</label>
                           <select
                             value={editingEmployee.status}
                             onChange={(e) => setEditingEmployee({ ...editingEmployee, status: e.target.value as any })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 transition-all outline-none font-bold text-xs"
                           >
                             <option value="active">Ativo</option>
                             <option value="inactive">Inativo</option>
@@ -937,69 +949,50 @@ const LogList: React.FC<LogListProps> = ({
                           </select>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">E-mail</label>
-                          <input
-                            type="email"
-                            value={editingEmployee.email || ''}
-                            onChange={(e) => setEditingEmployee({ ...editingEmployee, email: e.target.value })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">Telefone</label>
-                          <input
-                            type="text"
-                            value={editingEmployee.phone || ''}
-                            onChange={(e) => setEditingEmployee({ ...editingEmployee, phone: e.target.value })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Regular</label>
-                          <input
-                            type="number"
-                            value={editingEmployee.hourlyRate || 0}
-                            onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                            step="0.01"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Extra</label>
-                          <input
-                            type="number"
-                            value={editingEmployee.overtimeRate}
-                            onChange={(e) => setEditingEmployee({ ...editingEmployee, overtimeRate: parseFloat(e.target.value) })}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                            step="0.01"
-                          />
+
+                      <div className="pt-2">
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
+                        <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-slate-400 font-medium">Hora Regular</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                              <input
+                                type="number"
+                                value={editingEmployee.hourlyRate || 0}
+                                onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
+                                className="w-16 bg-transparent text-right text-indigo-400 font-black outline-none"
+                                step="0.01"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-slate-400 font-medium">Hora Extra</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                              <input
+                                type="number"
+                                value={editingEmployee.overtimeRate}
+                                onChange={(e) => setEditingEmployee({ ...editingEmployee, overtimeRate: parseFloat(e.target.value) })}
+                                className="w-16 bg-transparent text-right text-purple-400 font-black outline-none"
+                                step="0.01"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <label className="text-xs text-slate-500 uppercase font-bold">Meta Diária (h)</label>
-                        <input
-                          type="number"
-                          value={editingEmployee.dailyHours}
-                          onChange={(e) => setEditingEmployee({ ...editingEmployee, dailyHours: parseFloat(e.target.value) })}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                          step="0.5"
-                        />
-                      </div>
-                      <div className="flex gap-3 mt-6">
+
+                      <div className="flex gap-3 mt-8">
                         <button
                           type="button"
                           onClick={() => setEditingEmployee(null)}
-                          className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold"
+                          className="flex-1 py-4 bg-slate-800/50 text-slate-400 hover:text-white rounded-2xl font-bold transition-all border border-slate-700/50 active:scale-95"
                         >
                           Cancelar
                         </button>
                         <button
                           type="submit"
-                          className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-lg shadow-blue-900/20"
+                          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-indigo-900/40 active:scale-95 uppercase text-xs tracking-widest"
                         >
                           Salvar Alterações
                         </button>
@@ -1009,6 +1002,7 @@ const LogList: React.FC<LogListProps> = ({
                 </div>
               )
             }
+
 
             {/* MODAL: SUCCESS / WELCOME SCREEN */}
             {
@@ -1032,82 +1026,159 @@ const LogList: React.FC<LogListProps> = ({
             {/* MODAL: DELETE CONFIRMATION */}
             {
               deleteTarget && (
-                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-sm">
-                    <h3 className="text-xl font-bold text-white mb-2">Confirmar Ação</h3>
-                    <p className="text-slate-400 mb-6 text-sm">Digite sua senha para confirmar a exclusão.</p>
+                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                  <div className="glass-card p-8 rounded-[2.5rem] border border-white/10 shadow-2xl w-full max-w-sm animate-slide-up text-center">
+                    <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/30">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8 text-red-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.731 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-extrabold text-white mb-2">Excluir Registro?</h3>
+                    <p className="text-slate-400 mb-8 text-sm font-medium">Esta ação é permanente. Digite a senha administrativa para confirmar.</p>
+
                     <input
                       type="password"
-                      placeholder="Senha"
+                      placeholder="••••"
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-red-500 outline-none mb-4 text-center tracking-widest text-lg"
+                      className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl px-4 py-4 text-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 outline-none mb-6 text-center tracking-[1em] text-2xl font-black"
                       autoFocus
                     />
+
                     <div className="flex gap-3">
-                      <button onClick={() => { setDeleteTarget(null); setPasswordInput(''); }} className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold">Cancelar</button>
-                      <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 text-white rounded-lg font-bold">Excluir</button>
+                      <button
+                        onClick={() => { setDeleteTarget(null); setPasswordInput(''); }}
+                        className="flex-1 py-4 bg-slate-800/50 text-slate-400 hover:text-white rounded-2xl font-bold border border-slate-700/50 transition-all active:scale-95"
+                      >
+                        Voltar
+                      </button>
+                      <button
+                        onClick={confirmDelete}
+                        className="flex-1 py-4 bg-red-600 hover:bg-red-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-red-900/40 active:scale-95 uppercase text-xs tracking-widest"
+                      >
+                        Confirmar
+                      </button>
                     </div>
                   </div>
                 </div>
               )
             }
 
+
             {/* MODAL: SETTINGS */}
             {
               showSettingsModal && (
-                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-sm">
-                    <h3 className="text-xl font-bold text-white mb-4 text-center">Alterar Senha</h3>
+                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                  <div className="glass-card p-8 rounded-[2.5rem] border border-white/10 shadow-2xl w-full max-w-sm animate-slide-up">
+                    <div className="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-indigo-500/30">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-8 h-8 text-indigo-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-extrabold text-white mb-6 text-center">Segurança Admin</h3>
+
                     <form onSubmit={handleChangePin}>
-                      <div className="space-y-4 mb-6">
-                        <input type="password" placeholder="Senha Atual" value={currentPinInput} onChange={(e) => setCurrentPinInput(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white" required />
-                        <input type="text" placeholder="Nova Senha (4 dígitos)" value={newPinInput} onChange={(e) => setNewPinInput(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white" required maxLength={4} pattern="\d*" />
+                      <div className="space-y-4 mb-8">
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Senha Atual</label>
+                          <input
+                            type="password"
+                            placeholder="••••"
+                            value={currentPinInput}
+                            onChange={(e) => setCurrentPinInput(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl px-4 py-4 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none text-center tracking-[0.5em] font-black"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Nova Senha</label>
+                          <input
+                            type="text"
+                            placeholder="4 dígitos"
+                            value={newPinInput}
+                            onChange={(e) => setNewPinInput(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl px-4 py-4 text-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none text-center tracking-[0.5em] font-black"
+                            required
+                            maxLength={4}
+                            pattern="\d*"
+                          />
+                        </div>
                       </div>
+
                       <div className="flex gap-3">
-                        <button type="button" onClick={() => setShowSettingsModal(false)} className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold">Cancelar</button>
-                        <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold">Salvar</button>
+                        <button
+                          type="button"
+                          onClick={() => setShowSettingsModal(false)}
+                          className="flex-1 py-4 bg-slate-800/50 text-slate-400 hover:text-white rounded-2xl font-bold border border-slate-700/50 transition-all active:scale-95"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex-1 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-indigo-900/40 active:scale-95 uppercase text-xs tracking-widest"
+                        >
+                          Salvar
+                        </button>
                       </div>
                     </form>
                   </div>
                 </div>
               )
             }
+
             {/* MODAL: DIAGNOSTIC */}
             {
               showDiagnostic && (
                 <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-md z-[60] flex items-center justify-center p-4">
-                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                        <span className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></span>
-                        Diagnóstico de Rede Supabase
-                      </h3>
-                      <button onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }} className="text-slate-400 hover:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                  <div className="glass-card p-8 rounded-[2.5rem] border border-white/10 shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-slide-up overflow-hidden">
+                    <div className="flex justify-between items-center mb-8">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center border border-amber-500/30">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 text-amber-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8l2.25-2.25m4.33-4.14c.16-.43.25-.89.25-1.37a6.75 6.75 0 10-13.5 0c0 .48.09.94.25 1.37m13 0c.96 2.5 1.25 5.23.25 7.74a5.25 5.25 0 01-10.5 0c-1-2.51-.71-5.24.25-7.74m13 0a10.5 10.5 0 11-20.5 0" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-extrabold text-white tracking-tight">Status da Infraestrutura</h3>
+                          <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Diagnóstico de Rede Supabase</p>
+                        </div>
+                      </div>
+                      <button onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }} className="p-2 bg-slate-800 rounded-xl text-slate-500 hover:text-white transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto mb-6 bg-slate-900 rounded-xl p-4 font-mono text-sm text-blue-300 space-y-2 border border-slate-700">
+                    <div className="flex-1 overflow-y-auto mb-8 bg-slate-950/50 rounded-2xl p-6 font-mono text-xs text-indigo-300 space-y-3 border border-slate-800/50 shadow-inner">
                       {diagnosticResult ? (
-                        <div className="whitespace-pre-wrap">{diagnosticResult}</div>
+                        <div className="whitespace-pre-wrap leading-relaxed">
+                          {diagnosticResult.split('\n').map((line, i) => (
+                            <div key={i} className={`${line.includes('ERRO') ? 'text-rose-400' : line.includes('SUCESSO') ? 'text-emerald-400' : ''}`}>
+                              {line}
+                            </div>
+                          ))}
+                        </div>
                       ) : (
-                        <div className="text-slate-500 text-center py-10">Clique em "Iniciar Teste" para analisar a conexão.</div>
+                        <div className="flex flex-col items-center justify-center h-full text-slate-600 gap-4">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16 opacity-20">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                          </svg>
+                          <p className="font-bold text-sm">Pronto para iniciar análise de conexão.</p>
+                        </div>
                       )}
                       {isDiagnosing && (
-                        <div className="flex items-center gap-2 text-blue-400 animate-pulse">
-                          <svg className="animate-spin h-4 w-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <div className="flex items-center gap-3 text-indigo-400 font-bold animate-pulse py-4">
+                          <svg className="animate-spin h-5 w-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          <span>Executando testes de conectividade...</span>
+                          <span className="text-xs uppercase tracking-[0.2em]">Executando Protocolos...</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex gap-4">
                       <button
                         onClick={async () => {
                           setIsDiagnosing(true);
@@ -1143,7 +1214,7 @@ const LogList: React.FC<LogListProps> = ({
                               }
                             } catch (e) {
                               log(`ERRO CRÍTICO: Falha ao alcançar o servidor: ${String(e)}`);
-                              log(`Sugestão: Verifique se o projeto não está pausado no painel da Supabase ou se há bloqueio de firewall.`);
+                              log(`Sugestão: Verifique se o projeto não está pausado no painel da Supabase.`);
                             }
 
                             log(`Testando CORS (OPTIONS)...`);
@@ -1165,13 +1236,13 @@ const LogList: React.FC<LogListProps> = ({
                           }
                         }}
                         disabled={isDiagnosing}
-                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
+                        className="flex-3 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl font-black transition-all shadow-xl shadow-blue-900/40 active:scale-95 disabled:opacity-50 uppercase text-xs tracking-widest"
                       >
-                        {isDiagnosing ? 'Testando...' : 'Iniciar Teste'}
+                        {isDiagnosing ? 'Analisando...' : 'Iniciar Teste'}
                       </button>
                       <button
                         onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }}
-                        className="px-6 py-3 bg-slate-700 text-slate-200 rounded-xl font-bold"
+                        className="flex-1 px-6 py-4 bg-slate-800 text-slate-400 hover:text-white rounded-2xl font-bold border border-slate-700/50 transition-all active:scale-95"
                       >
                         Fechar
                       </button>
@@ -1180,10 +1251,11 @@ const LogList: React.FC<LogListProps> = ({
                 </div>
               )
             }
-          </div >
+          </div>
 
           {/* --- PRINT AREA --- */}
-          < div id="print-area" className="hidden print:block" >
+          <div id="print-area" className="hidden print:block">
+
             {printData && (
               <div className="font-sans text-black p-8">
                 <h1 className="text-2xl font-bold mb-1">{COMPANY_NAME}</h1>

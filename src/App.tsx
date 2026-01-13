@@ -354,62 +354,77 @@ const App: React.FC = () => {
 
   const renderIdle = () => (
     <div
-      className="flex flex-col items-center justify-center h-full w-full bg-slate-900 text-white cursor-pointer relative overflow-hidden"
+      className="flex flex-col items-center justify-center h-full w-full bg-[#030712] text-white cursor-pointer relative overflow-hidden"
       onClick={() => {
         playSound('start');
         setState(AppState.ENTER_ID);
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-900 opacity-80"></div>
+      {/* Background Effects */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[120px] rounded-full animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.05)_0%,transparent_70%)]"></div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center mb-32">
-        <div className="mb-8 p-6 bg-white/5 rounded-full backdrop-blur-md animate-pulse border border-white/10">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-20 h-20 text-blue-300">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+      <div className="relative z-10 flex flex-col items-center mb-32 group">
+        <div className="mb-10 p-8 bg-white/[0.03] rounded-[2.5rem] backdrop-blur-xl border border-white/10 shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:border-indigo-500/30">
+          <div className="relative">
+            <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full scale-75 animate-pulse"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-24 h-24 text-indigo-400 relative z-10">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
         </div>
-        <h1 className="text-5xl font-bold mb-2 tracking-tight text-white font-mono">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</h1>
-        <p className="text-xl text-slate-300 mb-12 capitalize">{currentTime.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2 text-white">{COMPANY_NAME}</h2>
-          <p className="text-blue-300/80 animate-bounce">Toque na tela para bater o ponto</p>
+        <div className="text-center space-y-2">
+          <h1 className="text-7xl font-black mb-2 tracking-tighter text-white font-outfit drop-shadow-2xl">
+            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </h1>
+          <p className="text-indigo-300/60 font-black uppercase tracking-[0.3em] text-[10px] bg-indigo-500/5 py-1 px-4 rounded-full border border-indigo-500/10 inline-block">
+            {currentTime.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
+        </div>
+
+        <div className="mt-16 flex flex-col items-center gap-4">
+          <div className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_0_30px_rgba(79,70,229,0.3)] animate-bounce active:scale-95 transition-all">
+            Toque para Iniciar
+          </div>
+          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{COMPANY_NAME} &bull; SISTEMA DE PONTO</p>
         </div>
       </div>
 
       {/* Recent Activity Feed */}
       {logs.length > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 z-20 pb-8 pt-12 bg-gradient-to-t from-slate-900 via-slate-900/90 to-transparent">
+        <div className="absolute bottom-0 left-0 right-0 z-20 pb-12 pt-20 bg-gradient-to-t from-[#030712] via-[#030712]/90 to-transparent">
           <div className="max-w-6xl mx-auto px-6">
-            <h3 className="text-slate-400 text-xs uppercase tracking-widest font-semibold mb-4 ml-1 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Últimas Atividades
+            <h3 className="text-slate-500 text-[9px] uppercase tracking-[0.3em] font-black mb-6 flex items-center gap-3 ml-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              Atividade em Tempo Real
             </h3>
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
+            <div className="flex gap-5 overflow-x-auto pb-4 px-2 scrollbar-hide">
               {logs.slice(-5).reverse().map((log) => (
-                <div key={log.id} className="flex-shrink-0 bg-slate-800/60 backdrop-blur-md p-3 rounded-xl border border-slate-700/50 flex items-center gap-3 shadow-lg hover:bg-slate-800/80 transition-colors w-64">
+                <div key={log.id} className="flex-shrink-0 glass-card p-4 rounded-[1.5rem] border border-white/5 flex items-center gap-4 shadow-xl hover:border-indigo-500/30 transition-all w-72 group/item">
                   <div className="relative">
-                    <img src={log.photoBase64} alt="User" className="w-12 h-12 rounded-full object-cover border-2 border-slate-600" />
-                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-800 ${log.type === 'IN' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
+                    <img src={log.photoBase64} alt="User" className="w-14 h-14 rounded-2xl object-cover border border-white/10 group-hover/item:border-indigo-500/50 transition-colors" />
+                    <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-lg flex items-center justify-center border-4 border-[#030712] shadow-lg ${log.type === 'IN' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
                       {log.type === 'IN' ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clipRule="evenodd" />
                         </svg>
                       ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.5-9a.75.75 0 00-.75-.75H7.25a.75.75 0 000 1.5h5.5a.75.75 0 00.75-.75z" clipRule="evenodd" />
                         </svg>
                       )}
                     </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-white truncate">{log.employeeName}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[10px] font-bold px-1.5 rounded-md ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
-                        {log.type === 'IN' ? 'ENTROU' : 'SAIU'}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-black text-white truncate group-hover/item:text-indigo-300 transition-colors">{log.employeeName}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
+                        {log.type === 'IN' ? 'Entrada' : 'Saída'}
                       </span>
-                      <span className="text-xs text-slate-400 font-mono">{log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="text-[10px] text-slate-500 font-black font-mono">{log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                   </div>
                 </div>
@@ -421,71 +436,71 @@ const App: React.FC = () => {
     </div>
   );
 
+
   const renderProcessing = () => (
-    <div className="flex flex-col items-center justify-center h-full w-full bg-slate-900">
+    <div className="flex flex-col items-center justify-center h-full w-full bg-[#030712] relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-indigo-500/10 blur-[150px] rounded-full animate-pulse"></div>
+
       <style>{`
         @keyframes scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(100%); }
+          0% { transform: translateY(-100%); opacity: 0; }
+          50% { opacity: 1; }
+          100% { transform: translateY(100%); opacity: 0; }
         }
         .animate-scan {
-          animation: scan 1.5s linear infinite;
+          animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
-        @keyframes spin-slow {
+        @keyframes orbit {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
-        .animate-spin-slow {
-          animation: spin-slow 8s linear infinite;
-        }
-        @keyframes spin-reverse {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        .animate-spin-reverse {
-          animation: spin-reverse 6s linear infinite;
+        .animate-orbit {
+          animation: orbit 10s linear infinite;
         }
       `}</style>
-      <div className="relative mb-10">
-        {/* Rotating Outer Rings */}
-        <div className="absolute -inset-4 border border-blue-500/30 rounded-full animate-spin-slow pointer-events-none border-dashed"></div>
-        <div className="absolute -inset-2 border border-indigo-500/30 rounded-full animate-spin-reverse pointer-events-none border-dotted"></div>
 
-        {/* Pulsing effect behind the image */}
-        <div className="absolute inset-0 rounded-full bg-blue-500 opacity-20 animate-ping"></div>
+      <div className="relative mb-12 group">
+        {/* Animated Rings */}
+        <div className="absolute -inset-10 border border-indigo-500/20 rounded-full animate-orbit border-dashed"></div>
+        <div className="absolute -inset-6 border border-blue-500/10 rounded-full animate-orbit border-dotted" style={{ animationDirection: 'reverse', animationDuration: '15s' }}></div>
 
-        {/* User image container */}
-        <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-slate-700 shadow-2xl z-10 bg-slate-800">
+        {/* Pulsing Aura */}
+        <div className="absolute inset-0 rounded-[3rem] bg-indigo-500/20 blur-2xl animate-pulse"></div>
+
+        {/* Image Container */}
+        <div className="relative w-48 h-64 rounded-[3rem] overflow-hidden border-2 border-white/10 shadow-2xl z-10 bg-slate-900 group-hover:border-indigo-500/50 transition-colors duration-500">
           {capturedImage ? (
-            <img src={capturedImage} alt="Processing" className="w-full h-full object-cover opacity-90" />
+            <img src={capturedImage} alt="Processing" className="w-full h-full object-cover opacity-80 backdrop-grayscale" />
           ) : (
-            <div className="w-full h-full bg-slate-800"></div>
+            <div className="w-full h-full bg-slate-800 animate-pulse"></div>
           )}
 
-          {/* Grid Overlay */}
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPgo8cGF0aCBkPSJNMCAwTDggOFpNOCAwTDAgOFoiIHN0cm9rZT0ibm9uZSIvPjwvc3ZnPg==')] opacity-20 mix-blend-overlay"></div>
+          {/* Biometric Grid Overlay */}
+          <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #4f46e5 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
 
-          {/* Scanning Line Animation */}
+          {/* Scanning Beam */}
           <div className="absolute inset-0 w-full h-full animate-scan pointer-events-none">
-            <div className="w-full h-2/3 bg-gradient-to-b from-transparent via-blue-500/40 to-transparent border-b-2 border-blue-400/80 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+            <div className="w-full h-1/2 bg-gradient-to-b from-transparent via-indigo-500/50 to-transparent border-b-2 border-indigo-400 shadow-[0_8px_20px_rgba(99,102,241,0.4)]"></div>
           </div>
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-white mb-4 animate-pulse">Verificando Biometria...</h2>
+      <div className="text-center relative z-10">
+        <h2 className="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Verificação Biométrica</h2>
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+          <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '200ms' }}></span>
+          <span className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-bounce" style={{ animationDelay: '400ms' }}></span>
+        </div>
 
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-      </div>
-
-      <div className="flex flex-col items-center gap-1">
-        <p className="text-slate-400 font-medium text-sm">Analisando traços faciais</p>
-        <p className="text-slate-500 text-xs">Aguarde um momento</p>
+        <div className="px-6 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full inline-block backdrop-blur-md">
+          <p className="text-indigo-300/80 font-black text-[10px] uppercase tracking-[0.2em]">Sincronizando com Servidor Seguro</p>
+        </div>
       </div>
     </div>
   );
+
 
   if (isLoading) {
     return (
