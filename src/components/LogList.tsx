@@ -1251,50 +1251,51 @@ const LogList: React.FC<LogListProps> = ({
                 </div>
               )
             }
+          </div> {/* closes 410 (max-w-7xl) */}
+        </div> {/* closes 409 (flex-1) */}
+      </div> {/* closes 320 (w-full h-full) */}
+
+      {/* --- PRINT AREA --- */}
+      <div id="print-area" className="hidden print:block">
+        {printData && (
+          <div className="font-sans text-black p-8">
+            <h1 className="text-2xl font-bold mb-1">{COMPANY_NAME}</h1>
+            <h2 className="text-lg font-bold mb-2">{printData.title}</h2>
+            <p className="mb-4 text-sm text-gray-600">{printData.subtitle}</p>
+
+            <table className="w-full text-left border-collapse border border-black text-xs">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-black p-2">Funcionário</th>
+                  <th className="border border-black p-2">Data/Hora</th>
+                  <th className="border border-black p-2">Tipo</th>
+                  <th className="border border-black p-2">Status</th>
+                  <th className="border border-black p-2">Mensagem</th>
+                </tr>
+              </thead>
+              <tbody>
+                {printData.logs.map(log => (
+                  <tr key={log.id}>
+                    <td className="border border-black p-2">
+                      {log.employeeName} <span className="text-gray-500">({log.employeeId})</span>
+                    </td>
+                    <td className="border border-black p-2">{log.timestamp.toLocaleString()}</td>
+                    <td className="border border-black p-2">{log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}</td>
+                    <td className="border border-black p-2">{log.isVerified ? 'OK' : 'NÃO VERIFICADO'}</td>
+                    <td className="border border-black p-2">{log.verificationMessage}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="mt-8 pt-4 border-t border-black text-xs text-center">
+              Relatório gerado em {new Date().toLocaleString()}
+            </div>
           </div>
-
-          {/* --- PRINT AREA --- */}
-          <div id="print-area" className="hidden print:block">
-
-            {printData && (
-              <div className="font-sans text-black p-8">
-                <h1 className="text-2xl font-bold mb-1">{COMPANY_NAME}</h1>
-                <h2 className="text-lg font-bold mb-2">{printData.title}</h2>
-                <p className="mb-4 text-sm text-gray-600">{printData.subtitle}</p>
-
-                <table className="w-full text-left border-collapse border border-black text-xs">
-                  <thead>
-                    <tr className="bg-gray-200">
-                      <th className="border border-black p-2">Funcionário</th>
-                      <th className="border border-black p-2">Data/Hora</th>
-                      <th className="border border-black p-2">Tipo</th>
-                      <th className="border border-black p-2">Status</th>
-                      <th className="border border-black p-2">Mensagem</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {printData.logs.map(log => (
-                      <tr key={log.id}>
-                        <td className="border border-black p-2">
-                          {log.employeeName} <span className="text-gray-500">({log.employeeId})</span>
-                        </td>
-                        <td className="border border-black p-2">{log.timestamp.toLocaleString()}</td>
-                        <td className="border border-black p-2">{log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}</td>
-                        <td className="border border-black p-2">{log.isVerified ? 'OK' : 'NÃO VERIFICADO'}</td>
-                        <td className="border border-black p-2">{log.verificationMessage}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <div className="mt-8 pt-4 border-t border-black text-xs text-center">
-                  Relatório gerado em {new Date().toLocaleString()}
-                </div>
-              </div>
-            )}
-          </div >
-        </>
-        );
+        )}
+      </div>
+    </>
+  );
 };
 
-        export default LogList;
+export default LogList;
