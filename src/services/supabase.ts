@@ -25,9 +25,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // 4. Create Client with Auto-RefreshToken (default)
-// We default to the placeholder only if absolutely necessary to prevent a crash on init,
-// but subsequent calls will fail if credentials aren't real.
+// Valores injetados como fallback para garantir funcionamento na Vercel
+const REAL_URL = 'https://xbxrxtmgfoexyeovytkg.supabase.co';
+const REAL_KEY = 'sb_publishable_XrKOUkhpGlvdNk0iz2iKiQ_VMd79ShY';
+
 export const supabase = createClient(
-    supabaseUrl || 'https://placeholder.url.supabase.co',
-    supabaseAnonKey || 'placeholder-key'
+    supabaseUrl || REAL_URL,
+    supabaseAnonKey || REAL_KEY
 );
