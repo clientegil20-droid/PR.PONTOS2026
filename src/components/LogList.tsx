@@ -317,86 +317,91 @@ const LogList: React.FC<LogListProps> = ({
         }
       `}</style>
 
-      <div className="w-full h-full flex flex-col bg-slate-900 overflow-hidden animate-fade-in print:hidden relative">
-        {/* TOP BAR */}
-        <div className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center shadow-lg z-10">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-600 rounded-lg text-white shadow-lg shadow-indigo-900/50">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+      <div className="w-full h-full flex flex-col bg-[#020617] overflow-hidden animate-fade-in print:hidden relative">
+        {/* TOP BAR - SaaS Style */}
+        <div className="bg-slate-900/50 backdrop-blur-xl border-b border-slate-800/60 px-8 py-5 flex justify-between items-center z-20">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 rotate-3">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-7 h-7">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white tracking-tight">Portal Administrativo RH</h2>
-              <p className="text-xs text-slate-400 font-medium">Gestão de Pessoas & Controle de Ponto</p>
+              <h1 className="text-2xl font-extrabold text-white tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">Portal de Gestão RH</h1>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest uppercase">Sistema de Ponto Inteligente</p>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setShowSettingsModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg transition-colors text-sm font-medium"
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-xl transition-all border border-slate-700/50 hover:border-indigo-500/50"
+              title="Configurações de Segurança"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
-              Segurança
             </button>
             <button
               onClick={() => setShowDiagnostic(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-amber-900/30"
+              className="flex items-center gap-2 px-6 py-2.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-xl transition-all text-sm font-bold border border-amber-500/20"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-              </svg>
+              <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
               Diagnóstico
             </button>
+            <div className="w-[1px] h-8 bg-slate-800 mx-2"></div>
             <button
               onClick={onClose}
-              className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm font-medium shadow-lg shadow-red-900/30"
+              className="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-all text-sm font-bold shadow-lg shadow-red-500/20 active:scale-95"
             >
-              Sair do Painel
+              Sair do Sistema
             </button>
           </div>
         </div>
 
-        {/* NAVIGATION TABS (Updated Design) */}
-        <div className="px-6 py-4 bg-slate-800 border-b border-slate-700 flex items-center gap-3 overflow-x-auto">
+        {/* NAVIGATION TABS - Premium Style */}
+        <div className="px-8 py-0 bg-slate-900/30 border-b border-slate-800/40 flex items-center gap-8 overflow-x-auto h-16">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'dashboard'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
-              : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+            className={`h-full px-2 relative font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'dashboard'
+              ? 'text-indigo-400'
+              : 'text-slate-500 hover:text-slate-300'
               }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
             </svg>
             Visão Geral
+            {activeTab === 'dashboard' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full shadow-[0_-4px_10px_rgba(99,102,241,0.5)]"></div>}
           </button>
           <button
             onClick={() => setActiveTab('logs')}
-            className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'logs'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
-              : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+            className={`h-full px-2 relative font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'logs'
+              ? 'text-indigo-400'
+              : 'text-slate-500 hover:text-slate-300'
               }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
-            Registros (Logs)
+            Auditoria de Ponto
+            {activeTab === 'logs' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full shadow-[0_-4px_10px_rgba(99,102,241,0.5)]"></div>}
           </button>
           <button
             onClick={() => setActiveTab('employees')}
-            className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'employees'
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50 scale-105 ring-2 ring-blue-500/50'
-              : 'bg-slate-900/50 text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700/50'
+            className={`h-full px-2 relative font-bold text-sm transition-all flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'employees'
+              ? 'text-indigo-400'
+              : 'text-slate-500 hover:text-slate-300'
               }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
             </svg>
-            Equipe & Salários
+            Gestão da Equipe
+            {activeTab === 'employees' && <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 rounded-t-full shadow-[0_-4px_10px_rgba(99,102,241,0.5)]"></div>}
           </button>
         </div>
 
@@ -406,46 +411,78 @@ const LogList: React.FC<LogListProps> = ({
 
             {/* -- DASHBOARD -- */}
             {activeTab === 'dashboard' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-sm">
-                    <p className="text-slate-400 text-sm font-medium mb-1">Total de Colaboradores</p>
-                    <p className="text-3xl font-bold text-white">{employees.filter(e => e.id !== '9999').length}</p>
-                    <p className="text-xs text-slate-500 mt-1">Registrados no RH</p>
+              <div className="space-y-8 animate-slide-up">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-500">
+                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Colaboradores</p>
+                    <div className="flex items-end gap-2">
+                      <p className="text-4xl font-extrabold text-white leading-none">{employees.filter(e => e.id !== '9999').length}</p>
+                      <span className="text-emerald-400 text-xs font-bold mb-1 flex items-center gap-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
+                          <path fillRule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.25a.75.75 0 011.08 0l5.25 5.25a.75.75 0 11-1.08 1.04l-3.96-3.908V16.25A.75.75 0 0110 17z" clipRule="evenodd" />
+                        </svg>
+                        Total
+                      </span>
+                    </div>
                   </div>
-                  <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-sm">
-                    <p className="text-slate-400 text-sm font-medium mb-1">Departamentos</p>
-                    <p className="text-3xl font-bold text-indigo-400">{new Set(employees.filter(e => e.id !== '9999').map(e => e.department)).size}</p>
-                    <p className="text-xs text-slate-500 mt-1">Setores Ativos</p>
+
+                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-500">
+                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Setores Ativos</p>
+                    <div className="flex items-end gap-2">
+                      <p className="text-4xl font-extrabold text-white leading-none">{new Set(employees.filter(e => e.id !== '9999').map(e => e.department)).size}</p>
+                      <span className="text-indigo-400 text-xs font-bold mb-1 whitespace-nowrap">Estrutura Org.</span>
+                    </div>
                   </div>
-                  <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-sm">
-                    <p className="text-slate-400 text-sm font-medium mb-1">Status Ativo</p>
-                    <p className="text-3xl font-bold text-emerald-400">{employees.filter(e => e.status === 'active' && e.id !== '9999').length}</p>
-                    <p className="text-xs text-slate-500 mt-1">Trabalhando no momento</p>
+
+                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-500">
+                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Status: Ativos</p>
+                    <div className="flex items-end gap-2">
+                      <p className="text-4xl font-extrabold text-emerald-400 leading-none">{employees.filter(e => e.status === 'active' && e.id !== '9999').length}</p>
+                      <span className="text-slate-500 text-xs font-bold mb-1">On-duty</span>
+                    </div>
                   </div>
-                  <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-sm">
-                    <p className="text-slate-400 text-sm font-medium mb-1">Hoje</p>
-                    <p className="text-xl font-bold text-white mt-1">{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+
+                  <div className="glass-card p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group hover:border-amber-500/30 transition-all duration-500">
+                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Calendário</p>
+                    <div className="flex flex-col">
+                      <p className="text-2xl font-extrabold text-white leading-none mb-1">{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric' })}</p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Simple Activity Chart */}
-                <div className="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-                  <h3 className="text-lg font-bold text-white mb-6">Atividade Recente (7 Dias)</h3>
-                  <div className="flex items-end gap-4 h-48 w-full">
+                {/* Refined Activity Chart */}
+                <div className="glass-card p-8 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden">
+                  <div className="flex items-center justify-between mb-10">
+                    <div>
+                      <h3 className="text-xl font-extrabold text-white tracking-tight">Frequência Semanal</h3>
+                      <p className="text-xs text-slate-500 font-medium">Histórico de acessos dos últimos 7 dias</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/50">
+                        <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
+                        Registros
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-end gap-6 h-56 w-full px-4">
                     {activityData.map((d, idx) => (
-                      <div key={idx} className="flex-1 flex flex-col items-center gap-2 group">
-                        <div className="w-full relative h-full flex items-end">
+                      <div key={idx} className="flex-1 flex flex-col items-center gap-4 group cursor-default">
+                        <div className="w-full relative h-full flex items-end justify-center">
                           <div
-                            className="w-full bg-blue-600/50 hover:bg-blue-500 rounded-t-lg transition-all relative group-hover:shadow-lg group-hover:shadow-blue-500/20"
-                            style={{ height: `${(d.count / maxActivity) * 100}%` }}
+                            className="w-10 bg-gradient-to-t from-indigo-600/20 to-indigo-500 rounded-2xl transition-all duration-500 group-hover:from-indigo-500 group-hover:to-purple-500 relative group-hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] shadow-lg"
+                            style={{ height: `${Math.max((d.count / maxActivity) * 100, 8)}%` }}
                           >
-                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-slate-600">
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-slate-900 text-[10px] font-black py-1.5 px-3 rounded-xl opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all shadow-2xl pointer-events-none">
                               {d.count}
                             </div>
                           </div>
                         </div>
-                        <span className="text-xs text-slate-400 font-medium">{d.day}</span>
+                        <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest group-hover:text-indigo-400 transition-colors">{d.day}</span>
                       </div>
                     ))}
                   </div>
@@ -618,78 +655,102 @@ const LogList: React.FC<LogListProps> = ({
 
             {/* -- EMPLOYEES TAB -- */}
             {activeTab === 'employees' && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column: Form */}
-                <div className="lg:col-span-1">
-                  <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 sticky top-4">
-                    <h3 className="text-lg font-bold text-white mb-4">Adicionar Funcionário</h3>
+              <div className="flex flex-col lg:flex-row gap-8 h-full animate-slide-up">
+                {/* LEFT: ADD EMPLOYEE FORM */}
+                <div className="w-full lg:w-96 flex-shrink-0">
+                  <div className="glass-card p-8 rounded-[2rem] border border-white/5 shadow-2xl sticky top-0">
+                    <h3 className="text-xl font-extrabold text-white mb-6 flex items-center gap-2">
+                      <span className="p-1.5 bg-indigo-500 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                          <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                        </svg>
+                      </span>
+                      Novo Colaborador
+                    </h3>
                     <form onSubmit={handleRegisterEmployee} className="space-y-4">
-                      <input
-                        type="text"
-                        placeholder="Nome Completo"
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                        required
-                      />
-                      <input
-                        type="text"
-                        placeholder="ID (Serial - 4 dígitos)"
-                        value={newId}
-                        onChange={(e) => setNewId(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                        required
-                        maxLength={4}
-                      />
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          type="text"
-                          placeholder="Departamento"
-                          value={newDepartment}
-                          onChange={(e) => setNewDepartment(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                          required
-                        />
-                        <input
-                          type="text"
-                          placeholder="CPF"
-                          value={newCpf}
-                          onChange={(e) => setNewCpf(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
+                      <div>
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Identificação</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <input
+                            type="text"
+                            placeholder="PIN"
+                            value={newId}
+                            onChange={(e) => setNewId(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600 font-mono text-center"
+                            required
+                            maxLength={4}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Nome Completo"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="col-span-2 w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            required
+                          />
+                        </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          type="email"
-                          placeholder="E-mail"
-                          value={newEmail}
-                          onChange={(e) => setNewEmail(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Telefone"
-                          value={newPhone}
-                          onChange={(e) => setNewPhone(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
-                      </div>
+
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="text-xs text-slate-500 ml-1">Data Contratação</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Setor</label>
+                          <input
+                            type="text"
+                            placeholder="ex: Vendas"
+                            value={newDepartment}
+                            onChange={(e) => setNewDepartment(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">CPF</label>
+                          <input
+                            type="text"
+                            placeholder="000.000..."
+                            value={newCpf}
+                            onChange={(e) => setNewCpf(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Contato</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            type="email"
+                            placeholder="E-mail"
+                            value={newEmail}
+                            onChange={(e) => setNewEmail(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Telefone"
+                            value={newPhone}
+                            onChange={(e) => setNewPhone(e.target.value)}
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-600"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Contratação</label>
                           <input
                             type="date"
                             value={newHireDate}
                             onChange={(e) => setNewHireDate(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white outline-none"
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition-all font-medium text-xs"
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-slate-500 ml-1">Status</label>
+                          <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-1 block">Status Inicial</label>
                           <select
                             value={newStatus}
                             onChange={(e) => setNewStatus(e.target.value as any)}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white outline-none"
+                            className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white outline-none focus:border-indigo-500 transition-all text-xs font-bold"
                           >
                             <option value="active">Ativo</option>
                             <option value="inactive">Inativo</option>
@@ -697,464 +758,471 @@ const LogList: React.FC<LogListProps> = ({
                           </select>
                         </div>
                       </div>
-                      <div>
-                        <label className="text-xs text-slate-500 ml-1">Valor Hora (Regular)</label>
-                        <input
-                          type="number"
-                          value={newHourlyRate}
-                          onChange={(e) => setNewHourlyRate(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white outline-none"
-                          required
-                          step="0.01"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-slate-500 ml-1">Horas/Dia</label>
-                          <input
-                            type="number"
-                            value={newDailyHours}
-                            onChange={(e) => setNewDailyHours(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white outline-none"
-                            required
-                            step="0.5"
-                          />
+
+                      <div className="pt-2">
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-3 block">Configuração Financeira</label>
+                        <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-2xl space-y-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-slate-400 font-medium">Valor Hora Regular</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                              <input
+                                type="number"
+                                value={newHourlyRate}
+                                onChange={(e) => setNewHourlyRate(e.target.value)}
+                                className="w-20 bg-transparent text-right text-indigo-400 font-black outline-none"
+                                placeholder="0.00"
+                                step="0.01"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-slate-400 font-medium">Extra (Adicional)</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-slate-600 font-bold">R$</span>
+                              <input
+                                type="number"
+                                value={newOvertimeRate}
+                                onChange={(e) => setNewOvertimeRate(e.target.value)}
+                                className="w-20 bg-transparent text-right text-purple-400 font-black outline-none"
+                                placeholder="0.00"
+                                step="0.01"
+                                required
+                              />
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label className="text-xs text-slate-500 ml-1">R$ Hora Extra</label>
-                          <input
-                            type="number"
-                            value={newOvertimeRate}
-                            onChange={(e) => setNewOvertimeRate(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white outline-none"
-                            required
-                            step="0.01"
-                          />
-                        </div>
                       </div>
-                      <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-3 font-bold transition-colors shadow-lg shadow-indigo-900/20">
-                        Cadastrar no RH
+
+                      <button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl px-4 py-4 font-black transition-all shadow-xl shadow-indigo-900/40 active:scale-95 text-sm uppercase tracking-widest mt-4">
+                        Confirmar Cadastro
                       </button>
                     </form>
                   </div>
                 </div>
 
-                {/* Right Column: List */}
-                <div className="lg:col-span-2 space-y-4">
-                  {employees.filter(e => e.id !== '9999').map((emp) => {
-                    const stats = getEmployeeStats(emp.id, emp.hourlyRate || 0, emp.overtimeRate, emp.dailyHours || 8);
-                    return (
-                      <div key={emp.id} className="bg-slate-800 p-5 rounded-xl border border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-slate-500 transition-colors">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-white text-lg">{emp.name}</h4>
-                            <span className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded font-mono">{emp.id}</span>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${emp.status === 'active' ? 'bg-emerald-900/30 text-emerald-400' :
-                              emp.status === 'on_vacation' ? 'bg-amber-900/30 text-amber-400' :
-                                'bg-slate-700 text-slate-400'
+                {/* RIGHT: EMPLOYEE LIST */}
+                <div className="flex-1 space-y-4 overflow-y-auto pr-2 pb-10">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-indigo-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                      </svg>
+                      Quadro de Funcionários
+                      <span className="text-[10px] bg-slate-800 text-slate-400 px-3 py-1 rounded-full">{employees.filter(e => e.id !== '9999').length}</span>
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    {employees.filter(e => e.id !== '9999').map(emp => (
+                      <div key={emp.id} className="glass-card p-6 rounded-[2rem] border border-white/5 hover:border-indigo-500/30 transition-all group relative overflow-hidden flex items-center gap-6">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 blur-3xl rounded-full"></div>
+
+                        <div className="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center text-indigo-400 font-black text-xl shadow-inner border border-white/5 relative z-10">
+                          {emp.name.charAt(0)}
+                        </div>
+
+                        <div className="flex-1 relative z-10">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-black text-white text-lg tracking-tight truncate max-w-[150px]">{emp.name}</h4>
+                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${emp.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                emp.status === 'on_vacation' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                                  'bg-slate-700/50 text-slate-400 border border-slate-600/30'
                               }`}>
                               {emp.status === 'active' ? 'Ativo' : emp.status === 'on_vacation' ? 'Férias' : 'Inativo'}
                             </span>
                           </div>
-                          <p className="text-slate-400 text-sm mb-1">{emp.role} • <span className="text-indigo-400">{emp.department}</span></p>
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 mt-2">
-                            {emp.cpf && <span>CPF: <span className="text-slate-400">{emp.cpf}</span></span>}
-                            {emp.phone && <span>Tel: <span className="text-slate-400">{emp.phone}</span></span>}
-                            <span>H. Extra: <span className="text-slate-300">R$ {emp.overtimeRate.toFixed(2)}</span></span>
-                            <span>Meta: <span className="text-slate-300">{emp.dailyHours}h</span></span>
+                          <div className="grid grid-cols-2 gap-y-1 gap-x-4 border-t border-white/5 pt-3">
+                            <div className="flex flex-col">
+                              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Remuneração</span>
+                              <span className="text-xs text-white font-black">R$ {emp.hourlyRate?.toFixed(2) || '0.00'} <small className="text-[8px] text-slate-500 font-normal">/h</small></span>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Carga Diária</span>
+                              <span className="text-xs text-white font-black">{emp.dailyHours}h</span>
+                            </div>
                           </div>
                         </div>
 
-                        <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
-                          <div className="text-right">
-                            <span className="text-xs text-slate-400 block uppercase tracking-wider">A Pagar (Extras)</span>
-                            <span className="text-xl font-bold text-emerald-400">R$ {stats.pay}</span>
-                            <span className="text-xs text-slate-500 block">{stats.overtimeHours}h extras realizadas</span>
-                          </div>
-                          <div className="flex gap-2 mt-2 w-full sm:w-auto">
-                            <button
-                              onClick={() => {
-                                setPrintData({
-                                  title: "Relatório Individual",
-                                  subtitle: `Funcionário: ${emp.name} (${emp.id})`,
-                                  logs: logs.filter(l => l.employeeId === emp.id).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-                                });
-                                // useEffect handles print
-                              }}
-                              className="flex-1 sm:flex-none p-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors" title="Imprimir"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008h-.008V10.5zm-3 0h.008v.008h-.008V10.5z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => setEditingEmployee(emp)}
-                              className="flex-1 sm:flex-none p-2 bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 border border-blue-900/50 rounded-lg transition-colors" title="Editar"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => {
-                                setDeleteTarget({ type: 'employee', id: emp.id });
-                                setPasswordInput('');
-                              }}
-                              className="flex-1 sm:flex-none p-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-900/50 rounded-lg transition-colors" title="Excluir"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                              </svg>
-                            </button>
-                          </div>
+                        <div className="flex flex-col gap-2 relative z-10">
+                          <button
+                            onClick={() => setEditingEmployee(emp)}
+                            className="p-2.5 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-500 hover:text-white rounded-xl transition-all border border-indigo-500/20 active:scale-95 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]"
+                            title="Editar Dados"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDeleteTarget({ type: 'employee', id: emp.id });
+                              setPasswordInput('');
+                            }}
+                            className="p-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20 active:scale-95"
+                            title="Remover do Sistema"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                          </button>
                         </div>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
-          </div>
-        </div>
 
-        {/* MODAL: EDIT EMPLOYEE */}
-        {editingEmployee && (
-          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-md">
-              <h3 className="text-xl font-bold text-white mb-4">Editar Funcionário</h3>
-              <form onSubmit={handleEditSubmit} className="space-y-4">
-                <div>
-                  <label className="text-xs text-slate-500 uppercase font-bold">Nome</label>
-                  <input
-                    type="text"
-                    value={editingEmployee.name}
-                    onChange={(e) => setEditingEmployee({ ...editingEmployee, name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                    required
-                  />
+            {/* MODAL: EDIT EMPLOYEE */}
+            {
+              editingEmployee && (
+                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-md">
+                    <h3 className="text-xl font-bold text-white mb-4">Editar Funcionário</h3>
+                    <form onSubmit={handleEditSubmit} className="space-y-4">
+                      <div>
+                        <label className="text-xs text-slate-500 uppercase font-bold">Nome</label>
+                        <input
+                          type="text"
+                          value={editingEmployee.name}
+                          onChange={(e) => setEditingEmployee({ ...editingEmployee, name: e.target.value })}
+                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">Cargo</label>
+                          <input
+                            type="text"
+                            value={editingEmployee.role}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, role: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">Departamento</label>
+                          <input
+                            type="text"
+                            value={editingEmployee.department}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, department: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">CPF</label>
+                          <input
+                            type="text"
+                            value={editingEmployee.cpf || ''}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, cpf: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">Status</label>
+                          <select
+                            value={editingEmployee.status}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, status: e.target.value as any })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          >
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                            <option value="on_vacation">Férias</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">E-mail</label>
+                          <input
+                            type="email"
+                            value={editingEmployee.email || ''}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, email: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">Telefone</label>
+                          <input
+                            type="text"
+                            value={editingEmployee.phone || ''}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, phone: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Regular</label>
+                          <input
+                            type="number"
+                            value={editingEmployee.hourlyRate || 0}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            step="0.01"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Extra</label>
+                          <input
+                            type="number"
+                            value={editingEmployee.overtimeRate}
+                            onChange={(e) => setEditingEmployee({ ...editingEmployee, overtimeRate: parseFloat(e.target.value) })}
+                            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                            step="0.01"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs text-slate-500 uppercase font-bold">Meta Diária (h)</label>
+                        <input
+                          type="number"
+                          value={editingEmployee.dailyHours}
+                          onChange={(e) => setEditingEmployee({ ...editingEmployee, dailyHours: parseFloat(e.target.value) })}
+                          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
+                          step="0.5"
+                        />
+                      </div>
+                      <div className="flex gap-3 mt-6">
+                        <button
+                          type="button"
+                          onClick={() => setEditingEmployee(null)}
+                          className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-lg shadow-blue-900/20"
+                        >
+                          Salvar Alterações
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">Cargo</label>
-                    <input
-                      type="text"
-                      value={editingEmployee.role}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, role: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">Departamento</label>
-                    <input
-                      type="text"
-                      value={editingEmployee.department}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, department: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">CPF</label>
-                    <input
-                      type="text"
-                      value={editingEmployee.cpf || ''}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, cpf: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">Status</label>
-                    <select
-                      value={editingEmployee.status}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, status: e.target.value as any })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                    >
-                      <option value="active">Ativo</option>
-                      <option value="inactive">Inativo</option>
-                      <option value="on_vacation">Férias</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">E-mail</label>
-                    <input
-                      type="email"
-                      value={editingEmployee.email || ''}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, email: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">Telefone</label>
-                    <input
-                      type="text"
-                      value={editingEmployee.phone || ''}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, phone: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Regular</label>
-                    <input
-                      type="number"
-                      value={editingEmployee.hourlyRate || 0}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, hourlyRate: parseFloat(e.target.value) })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                      step="0.01"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 uppercase font-bold">R$ Hora Extra</label>
-                    <input
-                      type="number"
-                      value={editingEmployee.overtimeRate}
-                      onChange={(e) => setEditingEmployee({ ...editingEmployee, overtimeRate: parseFloat(e.target.value) })}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                      step="0.01"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-slate-500 uppercase font-bold">Meta Diária (h)</label>
-                  <input
-                    type="number"
-                    value={editingEmployee.dailyHours}
-                    onChange={(e) => setEditingEmployee({ ...editingEmployee, dailyHours: parseFloat(e.target.value) })}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white"
-                    step="0.5"
-                  />
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setEditingEmployee(null)}
-                    className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold shadow-lg shadow-blue-900/20"
-                  >
-                    Salvar Alterações
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+              )
+            }
 
-        {/* MODAL: SUCCESS / WELCOME SCREEN */}
-        {successScreenData && (
-          <div className="absolute inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-            <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/20 to-slate-900 pointer-events-none"></div>
-            <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-2xl animate-bounce-short">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10 text-white">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">{successScreenData.title}</h2>
-            <p className="text-slate-300 mb-8">{successScreenData.message}</p>
-            <button onClick={() => setSuccessScreenData(null)} className="py-3 px-8 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold border border-slate-600">
-              OK
-            </button>
-          </div>
-        )}
-
-        {/* MODAL: DELETE CONFIRMATION */}
-        {deleteTarget && (
-          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-sm">
-              <h3 className="text-xl font-bold text-white mb-2">Confirmar Ação</h3>
-              <p className="text-slate-400 mb-6 text-sm">Digite sua senha para confirmar a exclusão.</p>
-              <input
-                type="password"
-                placeholder="Senha"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-red-500 outline-none mb-4 text-center tracking-widest text-lg"
-                autoFocus
-              />
-              <div className="flex gap-3">
-                <button onClick={() => { setDeleteTarget(null); setPasswordInput(''); }} className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold">Cancelar</button>
-                <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 text-white rounded-lg font-bold">Excluir</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* MODAL: SETTINGS */}
-        {showSettingsModal && (
-          <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-sm">
-              <h3 className="text-xl font-bold text-white mb-4 text-center">Alterar Senha</h3>
-              <form onSubmit={handleChangePin}>
-                <div className="space-y-4 mb-6">
-                  <input type="password" placeholder="Senha Atual" value={currentPinInput} onChange={(e) => setCurrentPinInput(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white" required />
-                  <input type="text" placeholder="Nova Senha (4 dígitos)" value={newPinInput} onChange={(e) => setNewPinInput(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white" required maxLength={4} pattern="\d*" />
-                </div>
-                <div className="flex gap-3">
-                  <button type="button" onClick={() => setShowSettingsModal(false)} className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold">Cancelar</button>
-                  <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold">Salvar</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-        {/* MODAL: DIAGNOSTIC */}
-        {showDiagnostic && (
-          <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-md z-[60] flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <span className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></span>
-                  Diagnóstico de Rede Supabase
-                </h3>
-                <button onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }} className="text-slate-400 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto mb-6 bg-slate-900 rounded-xl p-4 font-mono text-sm text-blue-300 space-y-2 border border-slate-700">
-                {diagnosticResult ? (
-                  <div className="whitespace-pre-wrap">{diagnosticResult}</div>
-                ) : (
-                  <div className="text-slate-500 text-center py-10">Clique em "Iniciar Teste" para analisar a conexão.</div>
-                )}
-                {isDiagnosing && (
-                  <div className="flex items-center gap-2 text-blue-400 animate-pulse">
-                    <svg className="animate-spin h-4 w-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            {/* MODAL: SUCCESS / WELCOME SCREEN */}
+            {
+              successScreenData && (
+                <div className="absolute inset-0 bg-slate-900 z-[100] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                  <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/20 to-slate-900 pointer-events-none"></div>
+                  <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-2xl animate-bounce-short">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-10 h-10 text-white">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    <span>Executando testes de conectividade...</span>
                   </div>
-                )}
+                  <h2 className="text-2xl font-bold text-white mb-2">{successScreenData.title}</h2>
+                  <p className="text-slate-300 mb-8">{successScreenData.message}</p>
+                  <button onClick={() => setSuccessScreenData(null)} className="py-3 px-8 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold border border-slate-600">
+                    OK
+                  </button>
+                </div>
+              )
+            }
+
+            {/* MODAL: DELETE CONFIRMATION */}
+            {
+              deleteTarget && (
+                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-sm">
+                    <h3 className="text-xl font-bold text-white mb-2">Confirmar Ação</h3>
+                    <p className="text-slate-400 mb-6 text-sm">Digite sua senha para confirmar a exclusão.</p>
+                    <input
+                      type="password"
+                      placeholder="Senha"
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-red-500 outline-none mb-4 text-center tracking-widest text-lg"
+                      autoFocus
+                    />
+                    <div className="flex gap-3">
+                      <button onClick={() => { setDeleteTarget(null); setPasswordInput(''); }} className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold">Cancelar</button>
+                      <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 text-white rounded-lg font-bold">Excluir</button>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            {/* MODAL: SETTINGS */}
+            {
+              showSettingsModal && (
+                <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-sm">
+                    <h3 className="text-xl font-bold text-white mb-4 text-center">Alterar Senha</h3>
+                    <form onSubmit={handleChangePin}>
+                      <div className="space-y-4 mb-6">
+                        <input type="password" placeholder="Senha Atual" value={currentPinInput} onChange={(e) => setCurrentPinInput(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white" required />
+                        <input type="text" placeholder="Nova Senha (4 dígitos)" value={newPinInput} onChange={(e) => setNewPinInput(e.target.value)} className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white" required maxLength={4} pattern="\d*" />
+                      </div>
+                      <div className="flex gap-3">
+                        <button type="button" onClick={() => setShowSettingsModal(false)} className="flex-1 py-3 bg-slate-700 text-slate-200 rounded-lg font-bold">Cancelar</button>
+                        <button type="submit" className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold">Salvar</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )
+            }
+            {/* MODAL: DIAGNOSTIC */}
+            {
+              showDiagnostic && (
+                <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                        <span className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></span>
+                        Diagnóstico de Rede Supabase
+                      </h3>
+                      <button onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }} className="text-slate-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto mb-6 bg-slate-900 rounded-xl p-4 font-mono text-sm text-blue-300 space-y-2 border border-slate-700">
+                      {diagnosticResult ? (
+                        <div className="whitespace-pre-wrap">{diagnosticResult}</div>
+                      ) : (
+                        <div className="text-slate-500 text-center py-10">Clique em "Iniciar Teste" para analisar a conexão.</div>
+                      )}
+                      {isDiagnosing && (
+                        <div className="flex items-center gap-2 text-blue-400 animate-pulse">
+                          <svg className="animate-spin h-4 w-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Executando testes de conectividade...</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={async () => {
+                          setIsDiagnosing(true);
+                          setDiagnosticResult(`[${new Date().toLocaleTimeString()}] Iniciando diagnóstico...\n`);
+                          let log = (msg: string) => setDiagnosticResult(prev => prev + `[${new Date().toLocaleTimeString()}] ${msg}\n`);
+
+                          try {
+                            const url = (import.meta as any).env.VITE_SUPABASE_URL || '';
+                            const key = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
+
+                            log(`Config: URL=${url ? 'OK' : 'MISSING'}, Key=${key ? 'OK' : 'MISSING'}`);
+
+                            if (!url) {
+                              log(`ERRO: VITE_SUPABASE_URL não definida.`);
+                              setIsDiagnosing(false);
+                              return;
+                            }
+
+                            log(`Testando ping (Health Check): ${url}/rest/v1/`);
+                            const start = Date.now();
+                            try {
+                              const res = await fetch(`${url}/rest/v1/`, {
+                                method: 'GET',
+                                headers: { 'apikey': key }
+                              });
+                              const end = Date.now();
+                              log(`Resultado fetch: Status ${res.status} (${res.statusText}) em ${end - start}ms`);
+
+                              if (res.ok) {
+                                log(`SUCESSO: Conexão básica estabelecida.`);
+                              } else {
+                                log(`ALERTA: O servidor respondeu, mas com erro status ${res.status}. Verifique se a API Key é válida.`);
+                              }
+                            } catch (e) {
+                              log(`ERRO CRÍTICO: Falha ao alcançar o servidor: ${String(e)}`);
+                              log(`Sugestão: Verifique se o projeto não está pausado no painel da Supabase ou se há bloqueio de firewall.`);
+                            }
+
+                            log(`Testando CORS (OPTIONS)...`);
+                            try {
+                              const res = await fetch(`${url}/rest/v1/employees`, {
+                                method: 'OPTIONS',
+                                headers: { 'apikey': key }
+                              });
+                              log(`OPTIONS response: ${res.status} ${res.statusText}`);
+                            } catch (e) {
+                              log(`ERRO CORS: Falha no preflight: ${String(e)}`);
+                            }
+
+                            log(`Diagnóstico concluído.`);
+                          } catch (e) {
+                            log(`ERRO NÃO TRATADO: ${String(e)}`);
+                          } finally {
+                            setIsDiagnosing(false);
+                          }
+                        }}
+                        disabled={isDiagnosing}
+                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
+                      >
+                        {isDiagnosing ? 'Testando...' : 'Iniciar Teste'}
+                      </button>
+                      <button
+                        onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }}
+                        className="px-6 py-3 bg-slate-700 text-slate-200 rounded-xl font-bold"
+                      >
+                        Fechar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+          </div >
+
+          {/* --- PRINT AREA --- */}
+          < div id="print-area" className="hidden print:block" >
+            {printData && (
+              <div className="font-sans text-black p-8">
+                <h1 className="text-2xl font-bold mb-1">{COMPANY_NAME}</h1>
+                <h2 className="text-lg font-bold mb-2">{printData.title}</h2>
+                <p className="mb-4 text-sm text-gray-600">{printData.subtitle}</p>
+
+                <table className="w-full text-left border-collapse border border-black text-xs">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="border border-black p-2">Funcionário</th>
+                      <th className="border border-black p-2">Data/Hora</th>
+                      <th className="border border-black p-2">Tipo</th>
+                      <th className="border border-black p-2">Status</th>
+                      <th className="border border-black p-2">Mensagem</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {printData.logs.map(log => (
+                      <tr key={log.id}>
+                        <td className="border border-black p-2">
+                          {log.employeeName} <span className="text-gray-500">({log.employeeId})</span>
+                        </td>
+                        <td className="border border-black p-2">{log.timestamp.toLocaleString()}</td>
+                        <td className="border border-black p-2">{log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}</td>
+                        <td className="border border-black p-2">{log.isVerified ? 'OK' : 'NÃO VERIFICADO'}</td>
+                        <td className="border border-black p-2">{log.verificationMessage}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <div className="mt-8 pt-4 border-t border-black text-xs text-center">
+                  Relatório gerado em {new Date().toLocaleString()}
+                </div>
               </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={async () => {
-                    setIsDiagnosing(true);
-                    setDiagnosticResult(`[${new Date().toLocaleTimeString()}] Iniciando diagnóstico...\n`);
-                    let log = (msg: string) => setDiagnosticResult(prev => prev + `[${new Date().toLocaleTimeString()}] ${msg}\n`);
-
-                    try {
-                      const url = (import.meta as any).env.VITE_SUPABASE_URL || '';
-                      const key = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
-
-                      log(`Config: URL=${url ? 'OK' : 'MISSING'}, Key=${key ? 'OK' : 'MISSING'}`);
-
-                      if (!url) {
-                        log(`ERRO: VITE_SUPABASE_URL não definida.`);
-                        setIsDiagnosing(false);
-                        return;
-                      }
-
-                      log(`Testando ping (Health Check): ${url}/rest/v1/`);
-                      const start = Date.now();
-                      try {
-                        const res = await fetch(`${url}/rest/v1/`, {
-                          method: 'GET',
-                          headers: { 'apikey': key }
-                        });
-                        const end = Date.now();
-                        log(`Resultado fetch: Status ${res.status} (${res.statusText}) em ${end - start}ms`);
-
-                        if (res.ok) {
-                          log(`SUCESSO: Conexão básica estabelecida.`);
-                        } else {
-                          log(`ALERTA: O servidor respondeu, mas com erro status ${res.status}. Verifique se a API Key é válida.`);
-                        }
-                      } catch (e) {
-                        log(`ERRO CRÍTICO: Falha ao alcançar o servidor: ${String(e)}`);
-                        log(`Sugestão: Verifique se o projeto não está pausado no painel da Supabase ou se há bloqueio de firewall.`);
-                      }
-
-                      log(`Testando CORS (OPTIONS)...`);
-                      try {
-                        const res = await fetch(`${url}/rest/v1/employees`, {
-                          method: 'OPTIONS',
-                          headers: { 'apikey': key }
-                        });
-                        log(`OPTIONS response: ${res.status} ${res.statusText}`);
-                      } catch (e) {
-                        log(`ERRO CORS: Falha no preflight: ${String(e)}`);
-                      }
-
-                      log(`Diagnóstico concluído.`);
-                    } catch (e) {
-                      log(`ERRO NÃO TRATADO: ${String(e)}`);
-                    } finally {
-                      setIsDiagnosing(false);
-                    }
-                  }}
-                  disabled={isDiagnosing}
-                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
-                >
-                  {isDiagnosing ? 'Testando...' : 'Iniciar Teste'}
-                </button>
-                <button
-                  onClick={() => { setShowDiagnostic(false); setDiagnosticResult(''); }}
-                  className="px-6 py-3 bg-slate-700 text-slate-200 rounded-xl font-bold"
-                >
-                  Fechar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* --- PRINT AREA --- */}
-      <div id="print-area" className="hidden print:block">
-        {printData && (
-          <div className="font-sans text-black p-8">
-            <h1 className="text-2xl font-bold mb-1">{COMPANY_NAME}</h1>
-            <h2 className="text-lg font-bold mb-2">{printData.title}</h2>
-            <p className="mb-4 text-sm text-gray-600">{printData.subtitle}</p>
-
-            <table className="w-full text-left border-collapse border border-black text-xs">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-black p-2">Funcionário</th>
-                  <th className="border border-black p-2">Data/Hora</th>
-                  <th className="border border-black p-2">Tipo</th>
-                  <th className="border border-black p-2">Status</th>
-                  <th className="border border-black p-2">Mensagem</th>
-                </tr>
-              </thead>
-              <tbody>
-                {printData.logs.map(log => (
-                  <tr key={log.id}>
-                    <td className="border border-black p-2">
-                      {log.employeeName} <span className="text-gray-500">({log.employeeId})</span>
-                    </td>
-                    <td className="border border-black p-2">{log.timestamp.toLocaleString()}</td>
-                    <td className="border border-black p-2">{log.type === 'IN' ? 'ENTRADA' : 'SAÍDA'}</td>
-                    <td className="border border-black p-2">{log.isVerified ? 'OK' : 'NÃO VERIFICADO'}</td>
-                    <td className="border border-black p-2">{log.verificationMessage}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="mt-8 pt-4 border-t border-black text-xs text-center">
-              Relatório gerado em {new Date().toLocaleString()}
-            </div>
-          </div>
-        )}
-      </div>
-    </>
-  );
+            )}
+          </div >
+        </>
+        );
 };
 
-export default LogList;
+        export default LogList;
