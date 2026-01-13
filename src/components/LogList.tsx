@@ -138,6 +138,15 @@ const LogList: React.FC<LogListProps> = ({
   onUpdateAdminPin
 }) => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'logs' | 'employees'>('dashboard');
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  // Clear notification after 3s
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => setNotification(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   // -- FILTERS & SEARCH --
   const [searchTerm, setSearchTerm] = useState('');
@@ -270,7 +279,7 @@ const LogList: React.FC<LogListProps> = ({
 
   const handlePrintFilteredLogs = () => {
     if (filteredLogs.length === 0) {
-      alert("Não há registros visíveis para imprimir.");
+      setNotification({ message: "Não há registros para imprimir.", type: 'info' });
       return;
     }
 
@@ -288,12 +297,12 @@ const LogList: React.FC<LogListProps> = ({
     e.preventDefault();
     // Validate all fields including hourly rate
     if (!newName || !newId || !newRole || !newOvertimeRate || !newDailyHours || !newHourlyRate) {
-      alert("Por favor, preencha todos os campos para cadastrar o funcionário.");
+      setNotification({ message: "Preencha todos os campos do formulário!", type: 'error' });
       return;
     }
 
     if (employees.some(emp => emp.id === newId)) {
-      alert("ID já existe!");
+      setNotification({ message: "Este ID já está em uso!", type: 'error' });
       return;
     }
 
@@ -354,15 +363,17 @@ const LogList: React.FC<LogListProps> = ({
         // Immediate UI feedback: Close modal and clear input first
         setDeleteTarget(null);
         setPasswordInput('');
+        setNotification({ message: "Excluindo registro...", type: 'info' });
 
-        // Defer heavy task (and potential sync alert blocks) to the next tick
+        // Defer heavy task
         setTimeout(() => {
           if (target.type === 'log') onDeleteLog(target.id);
           else if (target.type === 'employee') onDeleteEmployee(target.id);
-        }, 0);
+          setNotification({ message: "Excluído com sucesso!", type: 'success' });
+        }, 300);
       }
     } else {
-      alert("Senha incorreta!");
+      setNotification({ message: "Senha incorreta!", type: 'error' });
     }
   };
 
@@ -1303,6 +1314,18 @@ const LogList: React.FC<LogListProps> = ({
           </div>
         )}
       </div>
+
+      {notification && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] animate-bounce-short">
+          <div className={`px-6 py-4 rounded-3xl shadow-2xl border backdrop-blur-xl flex items-center gap-3 ${notification.type === 'success' ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400' :
+            notification.type === 'error' ? 'bg-rose-500/20 border-rose-500/50 text-rose-400' :
+              'bg-indigo-500/20 border-indigo-500/50 text-indigo-400'
+            }`}>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${notification.type === 'success' ? 'bg-emerald-400' : notification.type === 'error' ? 'bg-rose-400' : 'bg-indigo-400'}`} />
+            <span className="text-xs font-black uppercase tracking-widest">{notification.message}</span>
+          </div>
+        </div>
+      )}
     </>
   );
 };
