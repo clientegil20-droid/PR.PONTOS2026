@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS public.employees (
     overtime_rate NUMERIC,
     daily_hours NUMERIC,
     avatar_url TEXT,
-    base_salary NUMERIC DEFAULT 0
+    base_salary NUMERIC DEFAULT 0,
+    work_days JSONB -- Stores array of day numbers [0,1,2,3,4,5,6]
 );
 
 -- 2. Create Time Logs Table
@@ -61,3 +62,4 @@ CREATE POLICY "Enable delete for all users" ON public.time_logs
 
 -- 5. Migration Script (Run this if the table already exists)
 -- ALTER TABLE public.employees ADD COLUMN IF NOT EXISTS base_salary NUMERIC DEFAULT 0;
+-- ALTER TABLE public.employees ADD COLUMN IF NOT EXISTS work_days JSONB;

@@ -195,6 +195,7 @@ const LogList: React.FC<LogListProps> = ({
   const [newOvertimeRate, setNewOvertimeRate] = useState('');
   const [newDailyHours, setNewDailyHours] = useState('8');
   const [newSalary, setNewSalary] = useState('');
+  const [newWorkDays, setNewWorkDays] = useState<number[]>([1, 2, 3, 4, 5]); // Default Mon-Fri
 
   // -- AUTOMATION EFFECT: Financial Calculations --
   useEffect(() => {
@@ -308,7 +309,9 @@ const LogList: React.FC<LogListProps> = ({
     const summaryMap: Record<string, {
       totalHours: number,
       regularHours: number,
-      extraHours: number,
+      extraHours50: number,
+      extraHours100: number, // Sundays/Holidays or Day Offs
+      nightHours: number,
       logs: TimeLog[]
     }> = {};
 
@@ -316,7 +319,14 @@ const LogList: React.FC<LogListProps> = ({
     filteredLogs.forEach(log => {
       const dayKey = `${log.employeeId}_${log.timestamp.toLocaleDateString('pt-BR')}`;
       if (!summaryMap[dayKey]) {
-        summaryMap[dayKey] = { totalHours: 0, regularHours: 0, extraHours: 0, logs: [] };
+        summaryMap[dayKey] = {
+          totalHours: 0,
+          regularHours: 0,
+          extraHours50: 0,
+          extraHours100: 0,
+          nightHours: 0,
+          logs: []
+        };
       }
       summaryMap[dayKey].logs.push(log);
     });
@@ -327,16 +337,52 @@ const LogList: React.FC<LogListProps> = ({
       const sortedLogs = [...summary.logs].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
       const employeeId = sortedLogs[0].employeeId;
       const employee = employees.find(e => e.id === employeeId);
+
       const contractHours = employee?.dailyHours || 8;
+      // Default Work Days: Mon(1) to Fri(5) if undefined
+      const workDays = employee?.workDays || [1, 2, 3, 4, 5];
 
       let totalMs = 0;
+      let nightMs = 0;
       let lastIn: Date | null = null;
 
       sortedLogs.forEach(log => {
         if (log.type === 'IN') {
           lastIn = log.timestamp;
         } else if (log.type === 'OUT' && lastIn) {
-          totalMs += log.timestamp.getTime() - lastIn.getTime();
+          const start = lastIn;
+          const end = log.timestamp;
+          const duration = end.getTime() - start.getTime();
+          totalMs += duration;
+
+          // Night Shift Calculation (22:00 - 05:00)
+          // Simplified: check overlap with today's 22:00 to tomorrow's 05:00
+          // Note: This logic handles the typical case. Complex shifts might require more robust date math.
+          const startNight = new Date(start);
+          startNight.setHours(22, 0, 0, 0);
+
+          const endNight = new Date(start);
+          endNight.setDate(endNight.getDate() + 1);
+          endNight.setHours(5, 0, 0, 0);
+
+          // Check overlap [start, end] with [startNight, endNight]
+          const overlapStart = new Date(Math.max(start.getTime(), startNight.getTime()));
+          const overlapEnd = new Date(Math.min(end.getTime(), endNight.getTime()));
+
+          if (overlapStart < overlapEnd) {
+            nightMs += (overlapEnd.getTime() - overlapStart.getTime());
+          }
+
+          // Case: Shift started before 05:00 AM (Early morning night shift)
+          const earlyMorningEnd = new Date(start);
+          earlyMorningEnd.setHours(5, 0, 0, 0);
+          if (start < earlyMorningEnd) {
+            const earlyOverlapEnd = new Date(Math.min(end.getTime(), earlyMorningEnd.getTime()));
+            if (start < earlyOverlapEnd) {
+              nightMs += (earlyOverlapEnd.getTime() - start.getTime());
+            }
+          }
+
           lastIn = null;
         }
       });
@@ -344,64 +390,57 @@ const LogList: React.FC<LogListProps> = ({
       const totalH = totalMs / (1000 * 60 * 60);
 
       const firstLogDate = sortedLogs[0].timestamp;
-      const isWeekend = firstLogDate.getDay() === 0 || firstLogDate.getDay() === 6;
+      const dayOfWeek = firstLogDate.getDay(); // 0=Sun, 6=Sat
       const dateStr = firstLogDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
       const isHoliday = COMPANY_HOLIDAYS.includes(dateStr);
 
-      if (isWeekend || isHoliday) {
-        summary.extraHours = totalH;
+      // Determine if it's a day off (Not in workDays OR Holiday)
+      // Exception: If workDays includes 0 (Sunday) and it is Sunday, it is NOT a day off unless holiday.
+      const isDayOff = !workDays.includes(dayOfWeek) || isHoliday;
+
+      if (isDayOff) {
+        // All hours are 100% overtime
         summary.regularHours = 0;
+        summary.extraHours50 = 0;
+        summary.extraHours100 = totalH;
       } else {
-        // Commercial Hours Logic: 08:00 - 18:00
-        // Calculate hours worked outside this range
-        let extraOutsideRangeMs = 0;
-        let lastInTime: Date | null = null;
+        // Regular Day
+        summary.regularHours = Math.min(totalH, contractHours);
 
-        sortedLogs.forEach(l => {
-          if (l.type === 'IN') {
-            lastInTime = l.timestamp;
-          } else if (l.type === 'OUT' && lastInTime) {
-            const start = lastInTime;
-            const end = l.timestamp;
-
-            // Define commercial range for this day
-            const commercialStart = new Date(start);
-            commercialStart.setHours(8, 0, 0, 0);
-            const commercialEnd = new Date(start);
-            commercialEnd.setHours(18, 0, 0, 0);
-
-            // Time before 08:00
-            if (start < commercialStart) {
-              const beforeMs = Math.min(end.getTime(), commercialStart.getTime()) - start.getTime();
-              extraOutsideRangeMs += Math.max(0, beforeMs);
-            }
-
-            // Time after 18:00
-            if (end > commercialEnd) {
-              const afterMs = end.getTime() - Math.max(start.getTime(), commercialEnd.getTime());
-              extraOutsideRangeMs += Math.max(0, afterMs);
-            }
-            lastInTime = null;
-          }
-        });
-
-        const extraOutsideH = extraOutsideRangeMs / (1000 * 60 * 60);
-
-        // Regular hours are matches up to contract, but only those within commercial range
-        // Any hour outside commercial is ALREADY extra.
-        // If total hours exceed contract, the excess IS extra.
-        // We take the max of the two strategies to be "pro-employee" or follow standard rules.
-        // Standard rule: (Hours > Contract) OR (Hours outside range) = Extra.
-
-        const possibleRegularH = totalH - extraOutsideH;
-        summary.regularHours = Math.min(possibleRegularH, contractHours);
-        summary.extraHours = extraOutsideH + Math.max(0, possibleRegularH - contractHours);
+        // Excess is 50% overtime
+        summary.extraHours50 = Math.max(0, totalH - contractHours);
+        summary.extraHours100 = 0;
       }
+
       summary.totalHours = totalH;
+      summary.nightHours = nightMs / (1000 * 60 * 60);
     });
 
     return summaryMap;
   }, [filteredLogs, employees]);
+
+  const downloadSummaryCSV = () => {
+    const headers = "Data,Nome,ID,Total Horas,Normais,Extra 50%,Extra 100%,Adicional Noturno\n";
+    const keys = Object.keys(dailySummaries).sort((a, b) => b.localeCompare(a));
+
+    // Sort keys by date desc
+    const rows = keys.map(key => {
+      const summary = dailySummaries[key];
+      const [empId, dateStr] = key.split('_');
+      const employee = employees.find(e => e.id === empId);
+
+      return `${dateStr},"${employee?.name || 'Desconhecido'}",${empId},${summary.totalHours.toFixed(2).replace('.', ',')},${summary.regularHours.toFixed(2).replace('.', ',')},${summary.extraHours50.toFixed(2).replace('.', ',')},${summary.extraHours100.toFixed(2).replace('.', ',')},${summary.nightHours.toFixed(2).replace('.', ',')}`;
+    }).join("\n");
+
+    const csvContent = "data:text/csv;charset=utf-8," + headers + rows;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `resumo_ponto_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handlePrintFilteredLogs = () => {
     if (filteredLogs.length === 0) {
@@ -445,7 +484,8 @@ const LogList: React.FC<LogListProps> = ({
       hourlyRate: parseFloat(newHourlyRate),
       overtimeRate: parseFloat(newOvertimeRate),
       dailyHours: parseFloat(newDailyHours),
-      baseSalary: parseFloat(newSalary) || 0
+      baseSalary: parseFloat(newSalary) || 0,
+      workDays: newWorkDays,
     };
 
     onAddEmployee(newEmp);
@@ -462,6 +502,7 @@ const LogList: React.FC<LogListProps> = ({
     setNewHourlyRate('');
     setNewOvertimeRate('');
     setNewDailyHours('8');
+    setNewWorkDays([1, 2, 3, 4, 5]);
     setNewSalary('');
 
     setSuccessScreenData({
@@ -819,6 +860,15 @@ const LogList: React.FC<LogListProps> = ({
                       Planilha
                     </button>
                     <button
+                      onClick={downloadSummaryCSV}
+                      className="flex items-center gap-2 py-2.5 px-4 bg-purple-500/10 hover:bg-purple-500 text-purple-500 hover:text-white rounded-2xl transition-all border border-purple-500/20 font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-xl shadow-purple-950/20"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+                      </svg>
+                      Resumo
+                    </button>
+                    <button
                       onClick={handlePrintFilteredLogs}
                       className="flex items-center gap-2 py-2.5 px-4 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-500 hover:text-white rounded-2xl transition-all border border-indigo-500/20 font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-xl shadow-indigo-950/20"
                     >
@@ -889,18 +939,29 @@ const LogList: React.FC<LogListProps> = ({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                               <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
-                                <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest block mb-1">Total Dia</span>
+                                <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest block mb-1">Total Horas</span>
                                 <span className="text-xl text-white font-black">{summary.totalHours.toFixed(2)}<small className="text-[10px] ml-1 text-slate-500 font-normal">h</small></span>
                               </div>
                               <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
-                                <span className="text-[8px] text-emerald-600 font-black uppercase tracking-widest block mb-1">Horas Normais</span>
+                                <span className="text-[8px] text-emerald-600 font-black uppercase tracking-widest block mb-1">Normais</span>
                                 <span className="text-xl text-emerald-400 font-black">{summary.regularHours.toFixed(2)}<small className="text-[10px] ml-1 text-emerald-500/50 font-normal">h</small></span>
                               </div>
-                              <div className="p-4 bg-amber-500/5 rounded-2xl border border-amber-500/20">
-                                <span className="text-[8px] text-amber-600 font-black uppercase tracking-widest block mb-1">Horas Extras</span>
-                                <span className="text-xl text-amber-400 font-black">{summary.extraHours.toFixed(2)}<small className="text-[10px] ml-1 text-amber-500/50 font-normal">h</small></span>
+                              <div className="p-4 bg-amber-500/5 rounded-2xl border border-amber-500/20 relative overflow-hidden">
+                                <div className="flex flex-col">
+                                  <span className="text-[8px] text-amber-600 font-black uppercase tracking-widest block mb-1">Extras 50%</span>
+                                  <span className="text-xl text-amber-400 font-black">{summary.extraHours50.toFixed(2)}<small className="text-[10px] ml-1 text-amber-500/50 font-normal">h</small></span>
+                                </div>
+                              </div>
+                              <div className="p-4 bg-purple-500/5 rounded-2xl border border-purple-500/20 relative overflow-hidden">
+                                <span className="text-[8px] text-purple-600 font-black uppercase tracking-widest block mb-1">Extras 100%</span>
+                                <span className="text-xl text-purple-400 font-black">{summary.extraHours100.toFixed(2)}<small className="text-[10px] ml-1 text-purple-500/50 font-normal">h</small></span>
+                                {summary.nightHours > 0 && (
+                                  <div className="absolute top-1 right-2 bg-indigo-500/20 px-1.5 rounded text-[8px] text-indigo-300 font-bold border border-indigo-500/30">
+                                    +{summary.nightHours.toFixed(1)}h Not
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1052,6 +1113,30 @@ const LogList: React.FC<LogListProps> = ({
                             />
                             <span className="text-[10px] text-slate-700 font-black group-focus-within/h:text-indigo-500/50 transition-colors">HRS</span>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Work Days (Dias de Trabalho) */}
+                      <div className="pt-2">
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Dias de Trabalho (Escala)</label>
+                        <div className="flex flex-wrap gap-2 p-3 bg-slate-950/40 border border-white/5 rounded-2xl">
+                          {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((dayName, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                setNewWorkDays(prev =>
+                                  prev.includes(idx) ? prev.filter(d => d !== idx) : [...prev, idx]
+                                );
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${newWorkDays.includes(idx)
+                                ? 'bg-indigo-500 text-white border-indigo-500 shadow-lg shadow-indigo-500/50'
+                                : 'bg-slate-900 text-slate-600 border-white/5 hover:border-white/10'
+                                }`}
+                            >
+                              {dayName}
+                            </button>
+                          ))}
                         </div>
                       </div>
 
@@ -1207,6 +1292,31 @@ const LogList: React.FC<LogListProps> = ({
                             <option value="inactive">Inativo</option>
                             <option value="on_vacation">Férias</option>
                           </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Dias de Trabalho (Escala)</label>
+                        <div className="flex flex-wrap gap-2 p-3 bg-slate-800/50 border border-slate-700/50 rounded-2xl">
+                          {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((dayName, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => {
+                                const currentDays = editingEmployee.workDays || [1, 2, 3, 4, 5];
+                                const newDays = currentDays.includes(idx)
+                                  ? currentDays.filter(d => d !== idx)
+                                  : [...currentDays, idx];
+                                setEditingEmployee({ ...editingEmployee, workDays: newDays });
+                              }}
+                              className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${(editingEmployee.workDays || [1, 2, 3, 4, 5]).includes(idx)
+                                ? 'bg-indigo-500 text-white border-indigo-500 shadow-indigo-500/50'
+                                : 'bg-slate-900 text-slate-600 border-white/5 hover:border-white/10'
+                                }`}
+                            >
+                              {dayName}
+                            </button>
+                          ))}
                         </div>
                       </div>
 

@@ -13,6 +13,8 @@ export interface Employee {
   overtimeRate: number;
   dailyHours: number;
   baseSalary?: number;
+  workDays?: number[]; // 0=Sun, 1=Mon, ..., 6=Sat
+  nightShiftRate?: number; // Optional custom rate, otherwise we use standard calculation
 }
 
 export interface TimeLog {

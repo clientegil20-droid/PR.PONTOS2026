@@ -135,6 +135,7 @@ const App: React.FC = () => {
             overtimeRate: e.overtime_rate,
             dailyHours: e.daily_hours,
             baseSalary: e.base_salary,
+            workDays: e.work_days,
             avatarUrl: e.avatar_url
           })));
         } else {
@@ -284,6 +285,7 @@ const App: React.FC = () => {
         overtime_rate: newEmployee.overtimeRate,
         daily_hours: newEmployee.dailyHours,
         base_salary: newEmployee.baseSalary,
+        work_days: newEmployee.workDays,
         avatar_url: newEmployee.avatarUrl
       }]);
 
@@ -311,6 +313,7 @@ const App: React.FC = () => {
         overtime_rate: updatedEmployee.overtimeRate,
         daily_hours: updatedEmployee.dailyHours,
         base_salary: updatedEmployee.baseSalary,
+        work_days: updatedEmployee.workDays,
         avatar_url: updatedEmployee.avatarUrl
       })
       .eq('id', updatedEmployee.id);
