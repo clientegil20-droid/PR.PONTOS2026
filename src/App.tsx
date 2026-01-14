@@ -97,7 +97,9 @@ const App: React.FC = () => {
   const [enteredId, setEnteredId] = useState('');
 
   // State variables
-  const [adminPin, setAdminPin] = useState<string>('9999');
+  const [adminPin, setAdminPin] = useState<string>(() => {
+    return localStorage.getItem('gil_ponto_admin_pin') || '9999';
+  });
   const [employees, setEmployees] = useState<Employee[]>(MOCK_EMPLOYEES);
   const [logs, setLogs] = useState<TimeLog[]>([]);
 
@@ -110,10 +112,6 @@ const App: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch PIN
-        const savedPin = localStorage.getItem('gil_ponto_admin_pin') || '9999';
-        setAdminPin(savedPin);
-
         // Fetch Employees
         const { data: empData, error: empError } = await supabase
           .from('employees')
@@ -171,7 +169,7 @@ const App: React.FC = () => {
     };
 
     fetchData();
-  }, [adminPin]);
+  }, []);
 
   // Sync PIN to local (sensitive, better kept local for now or in dedicated profile)
   useEffect(() => {
