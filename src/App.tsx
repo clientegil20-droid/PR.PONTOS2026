@@ -409,45 +409,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Recent Activity Feed */}
-      {logs.length > 0 && (
-        <div className="absolute bottom-0 left-0 right-0 z-20 pb-12 pt-20 bg-gradient-to-t from-[#030712] via-[#030712]/90 to-transparent">
-          <div className="max-w-6xl mx-auto px-6">
-            <h3 className="text-slate-500 text-[9px] uppercase tracking-[0.3em] font-black mb-6 flex items-center gap-3 ml-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-              Atividade em Tempo Real
-            </h3>
-            <div className="flex gap-5 overflow-x-auto pb-4 px-2 scrollbar-hide">
-              {logs.slice(-5).reverse().map((log) => (
-                <div key={log.id} className="flex-shrink-0 glass-card p-4 rounded-[1.5rem] border border-white/5 flex items-center gap-4 shadow-xl hover:border-indigo-500/30 transition-all w-72 group/item">
-                  <div className="relative">
-                    <img src={log.photoBase64} alt="User" className="w-14 h-14 rounded-2xl object-cover border border-white/10 group-hover/item:border-indigo-500/50 transition-colors" />
-                    <div className={`absolute -bottom-2 -right-2 w-7 h-7 rounded-lg flex items-center justify-center border-4 border-[#030712] shadow-lg ${log.type === 'IN' ? 'bg-emerald-500' : 'bg-orange-500'}`}>
-                      {log.type === 'IN' ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z" clipRule="evenodd" />
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-white">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.5-9a.75.75 0 00-.75-.75H7.25a.75.75 0 000 1.5h5.5a.75.75 0 00.75-.75z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-black text-white truncate group-hover/item:text-indigo-300 transition-colors">{log.employeeName}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${log.type === 'IN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}`}>
-                        {log.type === 'IN' ? 'Entrada' : 'Saída'}
-                      </span>
-                      <span className="text-[10px] text-slate-500 font-black font-mono">{log.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 
