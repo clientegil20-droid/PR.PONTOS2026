@@ -182,6 +182,17 @@ const LogList: React.FC<LogListProps> = ({
     return `${year}-${month}-${day}`;
   };
 
+  const decimalToTime = (decimal: number) => {
+    const hours = Math.floor(decimal);
+    const minutes = Math.round((decimal - hours) * 60);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  };
+
+  const timeToDecimal = (timeStr: string) => {
+    const [h, m] = timeStr.split(':').map(Number);
+    return h + (m / 60);
+  };
+
   const [newName, setNewName] = useState('');
   const [newId, setNewId] = useState('');
   const [newRole, setNewRole] = useState('');
@@ -193,7 +204,7 @@ const LogList: React.FC<LogListProps> = ({
   const [newStatus, setNewStatus] = useState<'active' | 'inactive' | 'on_vacation'>('active');
   const [newHourlyRate, setNewHourlyRate] = useState('');
   const [newOvertimeRate, setNewOvertimeRate] = useState('');
-  const [newDailyHours, setNewDailyHours] = useState('8');
+  const [newDailyHours, setNewDailyHours] = useState('08:00'); // Changed to HH:MM format default
   const [newSalary, setNewSalary] = useState('');
   const [newWorkDays, setNewWorkDays] = useState<number[]>([1, 2, 3, 4, 5]); // Default Mon-Fri
 
@@ -212,7 +223,7 @@ const LogList: React.FC<LogListProps> = ({
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   // -- MISC STATES --
-  const [printData, setPrintData] = useState<{ title: string, subtitle: string, logs: TimeLog[] } | null>(null);
+  const [printData, setPrintData] = useState<{ title: string, subtitle: string, logs: TimeLog[], summaryHtml?: string } | null>(null);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [successScreenData, setSuccessScreenData] = useState<{ title: string, message: string } | null>(null);
@@ -450,11 +461,61 @@ const LogList: React.FC<LogListProps> = ({
 
     const dateRangeStr = startDate || endDate ? `Periodo: ${startDate || 'Inicio'} a ${endDate || 'Hoje'}` : 'Todo o Período';
 
-    // Set data and trigger the useEffect print
+    // Build Print HTML content with summary
+    let summaryHtml = '';
+
+    // If viewing summary or detailed, we might want to print summary table too?
+    // Let's always calculate summary text for print
+    // Reuse dailySummaries object
+
+    if (Object.keys(dailySummaries).length > 0) {
+      summaryHtml = `
+         <div style="margin-bottom: 20px; page-break-inside: avoid;">
+            <h3 style="border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-bottom: 10px;">Resumo Financeiro e de Horas</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 10px; font-family: monospace;">
+              <thead>
+                <tr style="background: #f3f4f6;">
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: left;">DATA</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: left;">NOME</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: right;">TOTAL</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: right;">META</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: right;">NORMAIS</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: right;">EXT 50%</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: right;">EXT 100%</th>
+                  <th style="border: 1px solid #ddd; padding: 4px; text-align: right;">NOTURNO</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${Object.keys(dailySummaries).sort((a, b) => b.localeCompare(a)).map(key => {
+        const s = dailySummaries[key];
+        const [empId, date] = key.split('_');
+        const emp = employees.find(e => e.id === empId);
+        // Contract hours for display
+        const contract = emp?.dailyHours || 8;
+        return `
+                     <tr>
+                       <td style="border: 1px solid #ddd; padding: 4px;">${date}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px;">${emp?.name || empId}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px; text-align: right; font-weight: bold;">${decimalToTime(s.totalHours)}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${decimalToTime(contract)}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${decimalToTime(s.regularHours)}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${decimalToTime(s.extraHours50)}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${decimalToTime(s.extraHours100)}</td>
+                       <td style="border: 1px solid #ddd; padding: 4px; text-align: right;">${decimalToTime(s.nightHours)}</td>
+                     </tr>
+                   `;
+      }).join('')}
+              </tbody>
+            </table>
+         </div>
+       `;
+    }
+
     setPrintData({
-      title: "Relatório de Registros de Ponto",
-      subtitle: `${dateRangeStr} | Status: ${filterVerified === 'all' ? 'Todos' : filterVerified}`,
-      logs: filteredLogs
+      title: "Relatório de Ponto",
+      subtitle: `${dateRangeStr} | Gerado em ${new Date().toLocaleString()}`,
+      logs: filteredLogs,
+      summaryHtml: summaryHtml // Pass this custom HTML to the print view
     });
   };
 
@@ -483,7 +544,7 @@ const LogList: React.FC<LogListProps> = ({
       status: newStatus,
       hourlyRate: parseFloat(newHourlyRate),
       overtimeRate: parseFloat(newOvertimeRate),
-      dailyHours: parseFloat(newDailyHours),
+      dailyHours: timeToDecimal(newDailyHours),
       baseSalary: parseFloat(newSalary) || 0,
       workDays: newWorkDays,
     };
@@ -501,7 +562,7 @@ const LogList: React.FC<LogListProps> = ({
     setNewStatus('active');
     setNewHourlyRate('');
     setNewOvertimeRate('');
-    setNewDailyHours('8');
+    setNewDailyHours('08:00');
     setNewWorkDays([1, 2, 3, 4, 5]);
     setNewSalary('');
 
@@ -942,24 +1003,27 @@ const LogList: React.FC<LogListProps> = ({
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                               <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
                                 <span className="text-[8px] text-slate-600 font-black uppercase tracking-widest block mb-1">Total Horas</span>
-                                <span className="text-xl text-white font-black">{summary.totalHours.toFixed(2)}<small className="text-[10px] ml-1 text-slate-500 font-normal">h</small></span>
+                                <span className="text-xl text-white font-black">{decimalToTime(summary.totalHours)}<small className="text-[10px] ml-1 text-slate-500 font-normal">h</small></span>
                               </div>
                               <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
                                 <span className="text-[8px] text-emerald-600 font-black uppercase tracking-widest block mb-1">Normais</span>
-                                <span className="text-xl text-emerald-400 font-black">{summary.regularHours.toFixed(2)}<small className="text-[10px] ml-1 text-emerald-500/50 font-normal">h</small></span>
+                                <div className="flex items-end gap-1">
+                                  <span className="text-xl text-emerald-400 font-black">{decimalToTime(summary.regularHours)}<small className="text-[10px] ml-1 text-emerald-500/50 font-normal">h</small></span>
+                                  <span className="text-[9px] text-slate-500 mb-1 font-bold">/ {decimalToTime(employee?.dailyHours || 8)}</span>
+                                </div>
                               </div>
                               <div className="p-4 bg-amber-500/5 rounded-2xl border border-amber-500/20 relative overflow-hidden">
                                 <div className="flex flex-col">
                                   <span className="text-[8px] text-amber-600 font-black uppercase tracking-widest block mb-1">Extras 50%</span>
-                                  <span className="text-xl text-amber-400 font-black">{summary.extraHours50.toFixed(2)}<small className="text-[10px] ml-1 text-amber-500/50 font-normal">h</small></span>
+                                  <span className="text-xl text-amber-400 font-black">{decimalToTime(summary.extraHours50)}<small className="text-[10px] ml-1 text-amber-500/50 font-normal">h</small></span>
                                 </div>
                               </div>
                               <div className="p-4 bg-purple-500/5 rounded-2xl border border-purple-500/20 relative overflow-hidden">
                                 <span className="text-[8px] text-purple-600 font-black uppercase tracking-widest block mb-1">Extras 100%</span>
-                                <span className="text-xl text-purple-400 font-black">{summary.extraHours100.toFixed(2)}<small className="text-[10px] ml-1 text-purple-500/50 font-normal">h</small></span>
+                                <span className="text-xl text-purple-400 font-black">{decimalToTime(summary.extraHours100)}<small className="text-[10px] ml-1 text-purple-500/50 font-normal">h</small></span>
                                 {summary.nightHours > 0 && (
                                   <div className="absolute top-1 right-2 bg-indigo-500/20 px-1.5 rounded text-[8px] text-indigo-300 font-bold border border-indigo-500/30">
-                                    +{summary.nightHours.toFixed(1)}h Not
+                                    +{decimalToTime(summary.nightHours)}h Not
                                   </div>
                                 )}
                               </div>
@@ -1105,11 +1169,10 @@ const LogList: React.FC<LogListProps> = ({
                           <label className="text-[10px] text-slate-500 font-black uppercase tracking-widest ml-1 mb-2 block">Carga Horária Diária</label>
                           <div className="flex items-center gap-2 bg-slate-950/40 border border-white/5 rounded-2xl px-5 py-4 group/h">
                             <input
-                              type="number"
+                              type="time"
                               value={newDailyHours}
                               onChange={(e) => setNewDailyHours(e.target.value)}
-                              className="w-full bg-transparent text-white font-black outline-none focus:text-indigo-400 transition-colors text-right"
-                              placeholder="8"
+                              className="w-full bg-transparent text-white font-black outline-none focus:text-indigo-400 transition-colors text-right cursor-pointer"
                             />
                             <span className="text-[10px] text-slate-700 font-black group-focus-within/h:text-indigo-500/50 transition-colors">HRS</span>
                           </div>
@@ -1653,6 +1716,12 @@ const LogList: React.FC<LogListProps> = ({
             <h2 className="text-lg font-bold mb-2">{printData?.title || 'Relatório'}</h2>
             <p className="mb-4 text-sm text-gray-600">{printData?.subtitle || ''}</p>
 
+            {/* Insert custom summary HTML if provided */}
+            {printData?.summaryHtml && (
+              <div dangerouslySetInnerHTML={{ __html: printData.summaryHtml }} />
+            )}
+
+            <h3 className="text-sm font-bold mt-6 mb-2 text-slate-700 uppercase tracking-wider">Detalhamento de Registros</h3>
             <table className="w-full text-left border-collapse border border-black text-xs">
               <thead>
                 <tr className="bg-gray-200">
